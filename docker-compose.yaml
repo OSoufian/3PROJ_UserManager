@@ -1,0 +1,68 @@
+version: "3.8"
+services:
+  local_pgdb:
+    image: postgres
+    container_name: local_pgdb
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+    volumes:
+      - local_pgdata:/var/lib/postgresql/data
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4_container
+    restart: always
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: contact@cyprientaib.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    links:
+      - "local_pgdb"
+  upload:
+    image: upload-api
+    container_name: user_api
+    environment:
+      - AppListen=":80"
+  chats:
+    image: chats-api
+    environment:
+      - AppListen=":80"
+      - VideoStore="/mnt/video"
+      - ImageStore="/mnt/image"
+    volumes:
+      - videos:/mnt/video
+      - images:/mnt/video
+
+  userApi:
+    image: user-api
+    container_name: user_api
+    environment:
+      PostgresHost: local_pgdb
+      PostgresUser: postgres
+      PostgresPassword: admin
+      PostgresDatabase: postgres
+      PostgresPort: 5432
+      RPDisplayName: LocalTest
+      RPID: localhost
+      RPOrigin: http://localhost:80
+      RPIcon: https://duo.com/logo.png
+      AppListen: ":80"
+    ports:
+      - "3000:80"
+    links:
+      - "local_pgdb"
+      - "upload"
+      - "chats"
+    
+
+volumes:
+  local_pgdata:
+  pgadmin-data:
+  images:
+  videos:
