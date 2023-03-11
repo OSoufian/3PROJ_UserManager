@@ -4,9 +4,11 @@ FROM golang:alpine3.17 as build
 
 COPY . /app
 WORKDIR /app
+ENV GO111MODULE=on
+RUN go mod download
 
 ENV CGO_ENABLED=0
-RUN go build -o /go/bin/user-manager
+RUN  GOOS=linux GOARCH=amd64 go build -o /go/bin/user-manager
 
 FROM ${DISTROLESS_IMAGE}
 
