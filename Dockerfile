@@ -1,17 +1,24 @@
-FROM golang as build
+ARG  DISTROLESS_IMAGE=gcr.io/distroless/static:nonroot
+
+FROM golang:alpine3.17 as build
 
 COPY . /app
 WORKDIR /app
 
 ENV CGO_ENABLED=0
-RUN go build -o userApp
+RUN go build -o /go/bin/user-manager
 
-FROM alpine:latest as product
+FROM ${DISTROLESS_IMAGE}
 
-WORKDIR /app
-COPY --from=build /app/userApp /bin/userApp
+USER 65532:65532
 
-RUN chmod 777 /bin/userApp
+# Copy the binary from the previous stage
+COPY --from=build /go/bin/user-manager /go/bin/user-manger 
+COPY --from=build ssl.so.3     /lib/libssl.so.3
+COPY --from=build crypto.so.3     /lib/libcrypto.so.3
+COPY --from=build musl-x86_64.so.1  /lib/ld-musl-x86_64.so.1
+
+
 
 ENV PostgresHost=local_pgdb
 ENV PostgresUser=postgres
@@ -27,6 +34,8 @@ ENV RPOrigin=http://localhost:80
 ENV RPIcon=https://duo.com/logo.png
 ENV AppListen=":80"
 
+# Expose the port that the application will listen on
 EXPOSE 80
 
-CMD ["userApp"]
+# Run the binary
+ENTRYPOINT ["/go/bin/chatsapi"]
