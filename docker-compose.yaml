@@ -24,23 +24,31 @@ services:
       - pgadmin-data:/var/lib/pgadmin
     links:
       - "local_pgdb"
-  upload:
-    image: upload-api
-    container_name: user_api
+  file_manager:
+    image: file-manager
+    container_name: file_manager 
     environment:
-      - AppListen=":80"
-  chats:
-    image: chats-api
-    environment:
-      - AppListen=":80"
-      - VideoStore="/mnt/video"
-      - ImageStore="/mnt/image"
-    volumes:
-      - videos:/mnt/video
-      - images:/mnt/video
+      AppListen: ":80"
+      PostgresHost: local_pgdb
+      PostgresUser: postgres
+      PostgresPassword: admin
+      PostgresDatabase: postgres
+      PostgresPort: 5432
+
+        # chats:
+        #   image: chats-api
+        #   environment:
+        #     - AppListen=":80"
+        #     - VideoStore="/mnt/video"
+        #     - ImageStore="/mnt/image"
+        #   volumes:
+        #     - videos:/mnt/video
+        # - images:/mnt/video
+    links:
+      - "local_pgdb"
 
   userApi:
-    image: user-api
+    image: user-manager 
     container_name: user_api
     environment:
       PostgresHost: local_pgdb
@@ -48,6 +56,7 @@ services:
       PostgresPassword: admin
       PostgresDatabase: postgres
       PostgresPort: 5432
+      FilesApi: file_manager
       RPDisplayName: LocalTest
       RPID: localhost
       RPOrigin: http://localhost:80
@@ -57,9 +66,8 @@ services:
       - "3000:80"
     links:
       - "local_pgdb"
-      - "upload"
-      - "chats"
-    
+      - "file_manager"
+
 
 volumes:
   local_pgdata:
