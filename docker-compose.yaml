@@ -47,28 +47,6 @@ services:
     links:
       - "local_pgdb"
 
-  userApi:
-    image: user-manager 
-    container_name: user_api
-    environment:
-      PostgresHost: local_pgdb
-      PostgresUser: postgres
-      PostgresPassword: admin
-      PostgresDatabase: postgres
-      PostgresPort: 5432
-      FilesApi: file_manager
-      RPDisplayName: LocalTest
-      RPID: localhost
-      RPOrigin: http://localhost:80
-      RPIcon: https://duo.com/logo.png
-      AppListen: ":80"
-    ports:
-      - "3000:80"
-    links:
-      - "local_pgdb"
-      - "file_manager"
-
-
 volumes:
   local_pgdata:
   pgadmin-data:
