@@ -1,11 +1,7 @@
 package http
 
 import (
-	"encoding/json"
-	"strings"
-	"webauthn_api/internal/domain"
 	"webauthn_api/internal/http/controllers"
-	"webauthn_api/internal/utils"
 
 	_ "webauthn_api/docs"
 	"webauthn_api/internal/http/middlewares"
@@ -70,7 +66,7 @@ func Http() *fiber.App {
 
 	controllers.UserBootstrap(app.Group("/user"))
 
-	app.Use(func(c *fiber.Ctx) error {
+	/* app.Use(func(c *fiber.Ctx) error {
 		route := strings.Split(string(c.Request().URI().Path()), "/")[1]
 		if route == "upload" {
 			route = "video"
@@ -87,7 +83,7 @@ func Http() *fiber.App {
 				user.Get()
 
 				channel := new(domain.Channel)
-				channel.OwerId = int(user.Id)
+				channel.OwnerId = user.Id
 
 				channel.GetByOwer()
 
@@ -126,7 +122,7 @@ func Http() *fiber.App {
 		} else {
 			return c.SendStatus(fiber.StatusUnauthorized)
 		}
-	})
+	}) */
 
 	controllers.PermissionBootstrap(app.Group("/perms"))
 

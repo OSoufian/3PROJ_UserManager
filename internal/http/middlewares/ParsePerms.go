@@ -38,7 +38,7 @@ func CheckPerms(c *fiber.Ctx, bins uint64) error {
 			return c.Status(fiber.StatusInternalServerError).JSON(err.Error())
 		}
 
-		if channel.OwerId == int(user.Id) {
+		if channel.OwnerId == user.Id {
 			perm |= 1 << 63
 		}
 

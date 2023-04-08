@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"webauthn_api/internal/domain"
 	"webauthn_api/internal/utils"
 
 	"github.com/gofiber/fiber/v2"
@@ -41,8 +42,16 @@ func getChannel(c *fiber.Ctx) error {
 // @Failure 404
 // @Router /channels/:channId [put]
 func createChannel(c *fiber.Ctx) error {
+	channel := utils.ParseChannel(c)
+	session := utils.CheckAuthn(c)
+	user := domain.UserModel{}
+	user.Username = session.DisplayName
+	channel.OwnerId = user.Get().Id
+	if user.Get() == nil {
+		return c.SendStatus(fiber.StatusForbidden)
+	}
 
-	return c.Status(fiber.StatusAccepted).JSON(utils.ParseChannel(c).Create())
+	return c.Status(fiber.StatusAccepted).JSON(channel.Create())
 }
 
 // Patch Channel

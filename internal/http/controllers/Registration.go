@@ -41,7 +41,7 @@ func registrationStart(c *fiber.Ctx) error {
 	}
 
 	if user.Find() {
-		if len(user.Credentials) < 0 && user.Password == "" {
+		if len(user.Credentials) == 0 && user.Password == "" {
 			log.Printf("Find user")
 			return c.Status(401).JSON(fiber.Map{
 				"message": "Find user",

@@ -53,6 +53,11 @@ func about(c *fiber.Ctx) error {
 // @Router /user/logout [get]
 func logout(c *fiber.Ctx) error {
 	userSession := utils.CheckAuthn(c)
+	if userSession == nil {
+		return c.Status(200).JSON(fiber.Map{
+			"message": "logout",
+		})
+	}
 	delete(utils.Sessions, userSession.DisplayName)
 	return c.Status(200).JSON(fiber.Map{
 		"message": "logout",

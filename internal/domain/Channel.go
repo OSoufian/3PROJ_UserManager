@@ -2,8 +2,8 @@ package domain
 
 type Channel struct {
 	Id          uint `gorm:"primarykey;autoIncrement;not null"`
-	OwerId      int
-	Owner       UserModel   `gorm:"foreignKey:OwerId"`
+	OwnerId     uint `gorm:"not null; foreignKey:id"`
+	Owner       UserModel
 	Description string      `gorm:"type:varchar(255);"`
 	SocialLink  string      `gorm:"type:varchar(255);"`
 	Banner      string      `gorm:"type:varchar(255);"`
@@ -26,7 +26,7 @@ func (channel *Channel) Get() *Channel {
 }
 
 func (channel *Channel) GetByOwer() *Channel {
-	tx := Db.Where("OwerId = ?", channel.OwerId).First(channel)
+	tx := Db.Where("OwerId = ?", channel.OwnerId).First(channel)
 
 	if tx.RowsAffected == 0 {
 		return nil
