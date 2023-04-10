@@ -1,6 +1,6 @@
 package domain
 
-var Permissions = map[string]uint64{
+var Permissions = map[string]int64{
 	"read_comments":   1 << 0,
 	"write_comments":  1 << 1,
 	"edit_comments":   1 << 2,

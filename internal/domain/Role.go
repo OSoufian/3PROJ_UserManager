@@ -1,11 +1,12 @@
 package domain
 
 type Role struct {
-	Id          uint `gorm:"primarykey;autoIncrement;not null"`
+	Id          uint 		`gorm:"primarykey;autoIncrement;not null"`
 	ChannelId   int
 	Channel     Channel     `gorm:"foreignKey:ChannelId; onUpdate:CASCADE; onDelete:CASCADE"`
 	User        []UserModel `gorm:"many2many:user_roles; onUpdate:CASCADE; onDelete:CASCADE"`
-	Permission  uint64      `gorm:"type:bigint"`
+	Weight 		int 		`gorm:"integer"`
+	Permission  int64      `gorm:"type:bigint"`
 	Name        string      `gorm:"type:varchar(255);"`
 	Description string      `gorm:"type:varchar(255);"`
 }

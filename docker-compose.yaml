@@ -24,31 +24,7 @@ services:
       - pgadmin-data:/var/lib/pgadmin
     links:
       - "local_pgdb"
-  file_manager:
-    image: file-manager
-    container_name: file_manager 
-    environment:
-      AppListen: ":80"
-      PostgresHost: local_pgdb
-      PostgresUser: postgres
-      PostgresPassword: admin
-      PostgresDatabase: postgres
-      PostgresPort: 5432
-
-        # chats:
-        #   image: chats-api
-        #   environment:
-        #     - AppListen=":80"
-        #     - VideoStore="/mnt/video"
-        #     - ImageStore="/mnt/image"
-        #   volumes:
-        #     - videos:/mnt/video
-        # - images:/mnt/video
-    links:
-      - "local_pgdb"
 
 volumes:
   local_pgdata:
   pgadmin-data:
-  images:
-  videos:

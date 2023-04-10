@@ -14,6 +14,10 @@ func UserBootstrap(app fiber.Router) {
 
 	app.Get("/", about)
 
+	app.Get("/channel", getChannel)
+
+	app.Get("/channel/:username", getChannelByUser)
+
 	app.Get("/logout", logout)
 
 	app.Post("/subscribe/:channId", nerverForget)
@@ -43,6 +47,37 @@ func about(c *fiber.Ctx) error {
 	}
 	user.Username = userSession.DisplayName
 	return c.Status(200).JSON(user.Get())
+}
+
+// Get Channel by username
+// @Summary Get channel of the user by username
+// @Description get all videos of the user by username
+// @Tags Channels
+// @Success 200 {Channel} domain.Channel
+// @Failure 404
+// @Router /channel/:username [get]
+func getChannelByUser(c*fiber.Ctx) error {
+	user := new(domain.UserModel)
+	user.Username = c.Params("username")
+	
+	return c.Status(200).JSON(user.GetChannel())
+}
+
+// Get Channel
+// @Summary Get channel of the user
+// @Description get all videos of the user
+// @Tags Channels
+// @Success 200 {Channel} domain.Channel
+// @Failure 404
+// @Router /channel [get]
+func getChannel(c *fiber.Ctx) error {
+	user := new(domain.UserModel)
+	userSession := utils.CheckAuthn(c)
+	if userSession == nil {
+		return c.SendStatus(fiber.StatusUnauthorized)
+	}
+	username = userSession.Disable
+	return c.Status(200).JSON(user.GetChannel())
 }
 
 // Logout

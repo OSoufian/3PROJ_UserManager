@@ -17,7 +17,7 @@ func Permissions(c *fiber.Ctx) error {
 		return c.Next()
 	}
 
-	var perm uint64
+	var perm int64
 	perm = 0
 
 	for _, uri := range route {
@@ -26,9 +26,10 @@ func Permissions(c *fiber.Ctx) error {
 		case "GET":
 			perm |= domain.Permissions["read_"+uri]
 
-		case
-			"POST",
-			"PUT":
+		case "POST":
+			perm |= domain.Permissions["write_"+uri]		
+				
+		case "PUT":
 			perm |= domain.Permissions["write_"+uri]
 
 		case "DELETE":
