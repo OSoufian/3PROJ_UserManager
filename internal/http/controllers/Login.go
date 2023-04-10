@@ -104,9 +104,12 @@ func loginEnd(c *fiber.Ctx) error {
 	}
 
 	session.Jwt = token
-	go session.DeleteAfter(utils.Sessions)
 
 	utils.Sessions[user.Username] = session
+
+	
+	go session.DeleteAfter(utils.Sessions)
+
 	user.Credentials = append(user.Credentials, *creds)
 
 	user.SaveCredentials()
@@ -159,9 +162,10 @@ func loginPassword(c *fiber.Ctx) error {
 
 	session.Jwt = token
 	session.Expiration = 24 * 3600 * 2
+	utils.Sessions[user.Username] = session
+	
 	go session.DeleteAfter(utils.Sessions)
 
-	utils.Sessions[user.Username] = session
 
 	return c.JSON(fiber.Map{
 		"token": session.Jwt,

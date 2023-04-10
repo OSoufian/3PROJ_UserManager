@@ -8,7 +8,7 @@ import (
 )
 
 type PartialRole struct {
-	Permission  uint64 `json:"permission"`
+	Permission  int64 `json:"permission"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
 }

@@ -5,7 +5,7 @@ import "webauthn_api/internal/domain"
 func ContainsChannel(user domain.UserModel, channel domain.Channel) int {
 
 	for k, a := range user.Subscribtion {
-		if isSub := a; isSub.Id == channel.Id && isSub.OwerId == channel.OwerId {
+		if isSub := a; isSub.Id == channel.Id && isSub.OwnerId == channel.OwnerId {
 			return k
 		}
 	}

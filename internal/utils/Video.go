@@ -12,7 +12,7 @@ type PartialCreateVideo struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Icon        string `json:"icon"`
-	ChannelId   uint64 `json:"channelId"`
+	ChannelId   int64 `json:"channelId"`
 }
 
 func (p *PartialVideo) Unmarshal(body []byte) error {

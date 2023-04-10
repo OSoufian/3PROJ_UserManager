@@ -14,6 +14,10 @@ func UserBootstrap(app fiber.Router) {
 
 	app.Get("/", about)
 
+	app.Get("/channel", getUserChannel)
+
+	app.Get("/channel/:username", getChannelByUser)
+
 	app.Get("/logout", logout)
 
 	app.Post("/subscribe/:channId", nerverForget)
@@ -45,6 +49,44 @@ func about(c *fiber.Ctx) error {
 	return c.Status(200).JSON(user.Get())
 }
 
+// Get Channel by username
+// @Summary Get channel of the user by username
+// @Description get all videos of the user by username
+// @Tags Channels
+// @Success 200 {Channel} domain.Channel
+// @Failure 404
+// @Router /user/channel/:username [get]
+func getChannelByUser(c*fiber.Ctx) error {
+	user := new(domain.UserModel)
+	user.Username = c.Params("username")
+	user.Get()
+	channel := new(domain.Channel)
+	channel.OwnerId = user.Id
+	channel.GetByOwner()
+	return c.Status(200).JSON(channel)
+}
+
+// Get Channel
+// @Summary Get channel of the user
+// @Description get all videos of the user
+// @Tags Channels
+// @Success 200 {Channel} domain.Channel
+// @Failure 404
+// @Router /channel [get]
+func getUserChannel(c *fiber.Ctx) error {
+	user := new(domain.UserModel)
+	userSession := utils.CheckAuthn(c)
+	if userSession == nil {
+		return c.SendStatus(fiber.StatusUnauthorized)
+	}
+	user.Username = userSession.DisplayName
+	user.Get()
+	channel := new(domain.Channel)
+	channel.OwnerId = user.Id
+	channel.GetByOwner()
+	return c.Status(200).JSON(channel)
+}
+
 // Logout
 // @Summary Just Logout
 // @Tags Users
@@ -53,6 +95,11 @@ func about(c *fiber.Ctx) error {
 // @Router /user/logout [get]
 func logout(c *fiber.Ctx) error {
 	userSession := utils.CheckAuthn(c)
+	if userSession == nil {
+		return c.Status(200).JSON(fiber.Map{
+			"message": "logout",
+		})
+	}
 	delete(utils.Sessions, userSession.DisplayName)
 	return c.Status(200).JSON(fiber.Map{
 		"message": "logout",

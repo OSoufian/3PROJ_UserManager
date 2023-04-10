@@ -22,6 +22,9 @@ import (
 var err error
 
 func main() {
+
+	utils.Sessions = make(map[string]*domain.UserSessions)
+
 	/* env vars */
 	if _, err := os.Stat(".env"); err == nil {
 		godotenv.Load(".env")

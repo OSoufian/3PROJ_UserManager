@@ -16,10 +16,10 @@ type UserSessions struct {
 	SessionCred *webauthn.Credential  `json:"-"`
 	DisplayName string
 	Jwt         string
-	Expiration  uint64 `json:"-"`
+	Expiration  int64 `json:"-"`
 }
 
-func (session *UserSessions) DeleteAfter(sessions map[string]*UserSessions) {
+func (session UserSessions) DeleteAfter(sessions map[string]*UserSessions) {
 
 	if session.Expiration > 0 {
 		time.Sleep(time.Second)
@@ -49,14 +49,15 @@ type UserModel struct {
 	Username      string    `gorm:"type:varchar(255);not null"`
 	Email         string    `gorm:"type:varchar(255);"`
 	Password      string    `gorm:"type:varchar(255);"`
-	Permission    uint64    `gorm:"type:bigint"`
+	Permission    int64    `gorm:"type:bigint;default:4607"`
 	Incredentials string    `gorm:"column:credentials type:text"`
 	ValideAccount bool      `gorm:"type:bool; default false"`
 	Disable       bool      `gorm:"type:bool; default false"`
-	Subscribtion  []Channel `gorm:"many2many:channel_subscription;"`
-	Role          []Role    `gorm:"many2many:user_roles;"`
+	Subscribtion  []Channel `gorm:"many2many:channel_subscription;  onUpdate:CASCADE; onDelete:CASCADE"`
+	Role          []Role    `gorm:"many2many:user_roles;  onUpdate:CASCADE; onDelete:CASCADE"`
 	webauthn.User `gorm:"-" json:"-"`
 	Credentials   []webauthn.Credential `gorm:"-"`
+	CreatedAt     time.Time `gorm:"default:CURRENT_TIMESTAMP"`
 }
 
 func (user *UserModel) TableName() string {
@@ -75,6 +76,14 @@ func (user *UserModel) SaveCredentials() error {
 	tx := Db.Save(&user)
 
 	return tx.Error
+}
+
+func (user *UserModel) GetChannel() Channel {
+	var channel Channel
+	Db.Where("owner_id = ? ", user.Id).First(channel)
+
+	return channel
+
 }
 
 func (user *UserModel) ParseCredentials() {
@@ -119,10 +128,10 @@ func (user *UserModel) Update() {
 	Db.Save(&user)
 }
 
-/* func randomUint64() uint64 {
+/* func randomint64() int64 {
 	buf := make([]byte, 8)
 	rand.Read(buf)
-	return binary.LittleEndian.Uint64(buf)
+	return binary.LittleEndian.int64(buf)
 } */
 
 // WebAuthnID returns the user's ID

@@ -9,7 +9,7 @@ import (
 
 type partialPerm struct {
 	Name string
-	Bin  uint64
+	Bin  int64
 }
 
 func PermissionBootstrap(app fiber.Router) {

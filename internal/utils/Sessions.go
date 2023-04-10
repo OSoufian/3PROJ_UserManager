@@ -15,7 +15,7 @@ var Sessions map[string]*domain.UserSessions
 
 func CheckAuthn(c *fiber.Ctx) *domain.UserSessions {
 	value, ok := c.GetReqHeaders()["Authorization"]
-	if ok == false {
+	if !ok {
 		return nil
 	}
 	authType := strings.Split(value, " ")

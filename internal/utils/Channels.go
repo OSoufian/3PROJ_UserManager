@@ -50,7 +50,7 @@ func ParseChannel(c *fiber.Ctx) *domain.Channel {
 }
 
 func GetChannel(c *fiber.Ctx) (domain.Channel, error) {
-	chanId, err := strconv.ParseInt(c.Params("channId"), 10, len(c.Params("channId")))
+	chanId, err := strconv.ParseInt(c.Params("channId"), 10, 64)
 	if err != nil {
 		return domain.Channel{}, err
 	}
@@ -59,6 +59,7 @@ func GetChannel(c *fiber.Ctx) (domain.Channel, error) {
 
 	channel.Id = uint(chanId)
 
+	channel.Get()
 	return channel, nil
 
 }

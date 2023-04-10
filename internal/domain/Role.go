@@ -1,13 +1,31 @@
 package domain
 
 type Role struct {
-	Id          uint `gorm:"primarykey;autoIncrement;not null"`
+	Id          uint 		`gorm:"primarykey;autoIncrement;not null"`
 	ChannelId   int
-	Channel     Channel     `gorm:"foreignKey:ChannelId"`
-	User        []UserModel `gorm:"many2many:user_roles;"`
-	Permission  uint64      `gorm:"type:bigint"`
+	Channel     Channel     `gorm:"foreignKey:ChannelId; onUpdate:CASCADE; onDelete:CASCADE"`
+	User        []UserModel `gorm:"many2many:user_roles; onUpdate:CASCADE; onDelete:CASCADE"`
+	Weight 		int 		`gorm:"integer"`
+	Permission  int64      `gorm:"type:bigint"`
 	Name        string      `gorm:"type:varchar(255);"`
 	Description string      `gorm:"type:varchar(255);"`
+}
+
+const (
+	DefaultRoleName        = "everyone"
+	DefaultRoleDescription = "default permissions"
+	DefaultRolePermissions = 4607
+)
+
+func CreateDefaultRole(channelId int) *Role {
+	role := &Role{
+		ChannelId:   channelId,
+		Permission:  DefaultRolePermissions,
+		Name:        DefaultRoleName,
+		Description: DefaultRoleDescription,
+	}
+
+	return role.Create()
 }
 
 func (r *Role) TableName() string {
@@ -26,7 +44,7 @@ func (r *Role) Create() *Role {
 
 func (c *Channel) GetRoles() []Role {
 	r := []Role{}
-	tx := Db.Where("channelId = ?", c.Id).Find(r)
+	tx := Db.Where("channel_id = ?", c.Id).Find(r)
 
 	if tx.RowsAffected == 0 {
 		return nil
