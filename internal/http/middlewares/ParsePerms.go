@@ -1,7 +1,9 @@
 package middlewares
 
 import (
+	"log"
 	"strconv"
+	"strings"
 	"webauthn_api/internal/domain"
 	"webauthn_api/internal/utils"
 
@@ -10,6 +12,9 @@ import (
 
 func CheckPerms(c *fiber.Ctx, bins uint64) error {
 	session := utils.CheckAuthn(c)
+	path := string(c.Request().URI().Path())
+	route := strings.Split(path, "/")
+
 	var (
 		perm uint64
 	)
@@ -21,35 +26,24 @@ func CheckPerms(c *fiber.Ctx, bins uint64) error {
 	user.Username = session.DisplayName
 	user.Get()
 
-	perm |= (user.Permission & bins)
-
-	if c.Params("channId") != "" {
-
-		chanId, err := strconv.ParseInt(c.Params("channId"), 10, len(c.Params("channId")))
+	if strings.Contains(path, "watch") {
+		videoId, err := strconv.ParseInt(route[len(route)-1], 10, 64)
 		if err != nil {
-			return c.Status(fiber.StatusBadRequest).JSON(err.Error())
-		}
-
-		channel := domain.Channel{}
-
-		channel.Id = uint(chanId)
-		roles, err := channel.GetUserRole(user)
-		if err != nil {
-			return c.Status(fiber.StatusInternalServerError).JSON(err.Error())
-		}
-
-		if channel.OwnerId == user.Id {
-			perm |= 1 << 63
-		}
-
-		for _, r := range roles {
-			if r.Permission&bins != 0 {
-				perm |= r.Permission & bins
-				break
+			log.Println("Error parsing video ID:", err)
+		} else {
+			channel := domain.Channel{}
+			channel = *channel.GetByVideoId(uint(videoId))
+			perms, err := channel.GetUserRole(user)
+			if err == nil {
+				user.Permission |= perms.Permission
+			} else {
+				log.Println(err)
 			}
 		}
 
 	}
+
+	perm |= (user.Permission & bins)
 
 	if perm != 0 {
 		return c.Next()

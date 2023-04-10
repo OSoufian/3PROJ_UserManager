@@ -3,8 +3,8 @@ package domain
 type Role struct {
 	Id          uint `gorm:"primarykey;autoIncrement;not null"`
 	ChannelId   int
-	Channel     Channel     `gorm:"foreignKey:ChannelId"`
-	User        []UserModel `gorm:"many2many:user_roles;"`
+	Channel     Channel     `gorm:"foreignKey:ChannelId; onUpdate:CASCADE; onDelete:CASCADE"`
+	User        []UserModel `gorm:"many2many:user_roles; onUpdate:CASCADE; onDelete:CASCADE"`
 	Permission  uint64      `gorm:"type:bigint"`
 	Name        string      `gorm:"type:varchar(255);"`
 	Description string      `gorm:"type:varchar(255);"`
@@ -26,7 +26,7 @@ func (r *Role) Create() *Role {
 
 func (c *Channel) GetRoles() []Role {
 	r := []Role{}
-	tx := Db.Where("channelId = ?", c.Id).Find(r)
+	tx := Db.Where("channel_id = ?", c.Id).Find(r)
 
 	if tx.RowsAffected == 0 {
 		return nil

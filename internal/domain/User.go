@@ -53,8 +53,8 @@ type UserModel struct {
 	Incredentials string    `gorm:"column:credentials type:text"`
 	ValideAccount bool      `gorm:"type:bool; default false"`
 	Disable       bool      `gorm:"type:bool; default false"`
-	Subscribtion  []Channel `gorm:"many2many:channel_subscription;"`
-	Role          []Role    `gorm:"many2many:user_roles;"`
+	Subscribtion  []Channel `gorm:"many2many:channel_subscription;  onUpdate:CASCADE; onDelete:CASCADE"`
+	Role          []Role    `gorm:"many2many:user_roles;  onUpdate:CASCADE; onDelete:CASCADE"`
 	webauthn.User `gorm:"-" json:"-"`
 	Credentials   []webauthn.Credential `gorm:"-"`
 }

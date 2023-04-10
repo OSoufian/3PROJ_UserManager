@@ -46,10 +46,10 @@ func Http() *fiber.App {
 		Level: compress.LevelBestSpeed,
 	}))
 
-	// app.Use(middlewares.CSRF())
-	// app.Use(encryptcookie.New(encryptcookie.Config{
-	// 	Key: fiberUtils.UUIDv4(),
-	// }))
+	app.Use(middlewares.CSRF())
+	// app.Use(middlewares.EncryptCookie())
+
+	app.Use(middlewares.Permissions)
 
 	// app.Get("/checkUser/:username", CheckUserName)
 	app.Get("/", healthCheck)
@@ -65,64 +65,6 @@ func Http() *fiber.App {
 	controllers.LoginBoostrap(app.Group("/login"))
 
 	controllers.UserBootstrap(app.Group("/user"))
-
-	/* app.Use(func(c *fiber.Ctx) error {
-		route := strings.Split(string(c.Request().URI().Path()), "/")[1]
-		if route == "upload" {
-			route = "video"
-
-			if c.Method() == "PUT" {
-				partial := new(utils.PartialVideo)
-
-				partial.Unmarshal(c.Body())
-
-				session := utils.CheckAuthn(c)
-
-				user := new(domain.UserModel)
-				user.Username = session.DisplayName
-				user.Get()
-
-				channel := new(domain.Channel)
-				channel.OwnerId = user.Id
-
-				channel.GetByOwer()
-
-				video := new(utils.PartialCreateVideo)
-
-				video.ChannelId = uint64(channel.Id)
-				video.Description = partial.Description
-				video.Name = partial.Name
-				video.Icon = partial.Icon
-				bittes, _ := json.Marshal(video)
-
-				c.Request().SetBody(bittes)
-
-			}
-		}
-
-		if c.Method() == "GET" {
-
-			if strings.Contains(string(c.Request().URI().Path()), "monitor") || strings.Contains(string(c.Request().URI().Path()), "swagger") {
-				return c.Next()
-			}
-
-			return middlewares.CheckPerms(c, domain.Permissions["read_"+route]|domain.Permissions["administrator"])
-
-		} else if c.Method() == "PUT" {
-			return middlewares.CheckPerms(c, domain.Permissions["write_"+route]|domain.Permissions["administrator"])
-
-		} else if c.Method() == "POST" {
-			return middlewares.CheckPerms(c, domain.Permissions["edit_"+route]|domain.Permissions["administrator"])
-
-		} else if c.Method() == "PATCH" {
-			return middlewares.CheckPerms(c, domain.Permissions["edit_"+route]|domain.Permissions["administrator"])
-		} else if c.Method() == "DELETE" {
-			return middlewares.CheckPerms(c, domain.Permissions["delete_"+route]|domain.Permissions["administrator"])
-
-		} else {
-			return c.SendStatus(fiber.StatusUnauthorized)
-		}
-	}) */
 
 	controllers.PermissionBootstrap(app.Group("/perms"))
 

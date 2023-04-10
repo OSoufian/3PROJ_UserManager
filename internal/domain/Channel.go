@@ -2,13 +2,17 @@ package domain
 
 type Channel struct {
 	Id          uint `gorm:"primarykey;autoIncrement;not null"`
-	OwnerId     uint `gorm:"not null; foreignKey:id"`
+	OwnerId     uint `gorm:"not null; foreignKey:id onUpdate:CASCADE; onDelete:CASCADE"`
 	Owner       UserModel
 	Description string      `gorm:"type:varchar(255);"`
 	SocialLink  string      `gorm:"type:varchar(255);"`
 	Banner      string      `gorm:"type:varchar(255);"`
 	Icon        string      `gorm:"type:varchar(255);"`
 	Subscribers []UserModel `gorm:"many2many:channel_subscription;"`
+}
+
+type UserChannelPermission struct {
+	Permission uint64 `gorm:"column:permission"`
 }
 
 func (channel *Channel) TableName() string {
@@ -35,22 +39,32 @@ func (channel *Channel) GetByOwer() *Channel {
 	return channel
 }
 
-func (channel *Channel) GetUserRole(user UserModel) ([]Role, error) {
-	var users []UserModel
-	var roles []Role
-	err := Db.
-		Model(&UserModel{}).
-		Preload("Channel").
-		Find(&users).
-		Where("username == ?", user.Username).
-		Model(&UserModel{}).
-		Preload("roles").
-		Find(&roles)
+func (channel *Channel) GetByVideoId(videoId uint) *Channel {
+	err := Db.Joins("JOIN video_info ON channels.id = video_info.channel_id").
+		Where("video_info.id = ?", videoId).
+		First(channel).Error
 	if err != nil {
-		return roles, err.Error
+		return nil
 	}
 
-	return roles, nil
+	return channel
+}
+
+func (channel *Channel) GetUserRole(user UserModel) (UserChannelPermission, error) {
+	var perms UserChannelPermission
+	err := Db.
+		Joins("JOIN roles r ON r.id = role_id").
+		Joins("JOIN users u ON u.id = user_model_id").
+		Where("channel_id = ? AND u.id = ?", channel.Id, user.Id).
+		Select("r.permission").
+		Find(perms).
+		Error
+
+	if err != nil {
+		return perms, err
+	}
+
+	return perms, nil
 
 }
 
