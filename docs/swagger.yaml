@@ -12,18 +12,18 @@ definitions:
       owerId:
         type: integer
       owner:
-        $ref: "#/definitions/domain.UserModel"
+        $ref: '#/definitions/domain.UserModel'
       socialLink:
         type: string
       subscribers:
         items:
-          $ref: "#/definitions/domain.UserModel"
+          $ref: '#/definitions/domain.UserModel'
         type: array
     type: object
   domain.Role:
     properties:
       channel:
-        $ref: "#/definitions/domain.Channel"
+        $ref: '#/definitions/domain.Channel'
       channelId:
         type: integer
       description:
@@ -36,14 +36,14 @@ definitions:
         type: integer
       user:
         items:
-          $ref: "#/definitions/domain.UserModel"
+          $ref: '#/definitions/domain.UserModel'
         type: array
     type: object
   domain.UserModel:
     properties:
       credentials:
         items:
-          $ref: "#/definitions/webauthn.Credential"
+          $ref: '#/definitions/webauthn.Credential'
         type: array
       disable:
         type: boolean
@@ -57,13 +57,15 @@ definitions:
         type: string
       password:
         type: string
+      permission:
+        type: integer
       role:
         items:
-          $ref: "#/definitions/domain.Role"
+          $ref: '#/definitions/domain.Role'
         type: array
       subscribtion:
         items:
-          $ref: "#/definitions/domain.Channel"
+          $ref: '#/definitions/domain.Channel'
         type: array
       username:
         type: string
@@ -97,17 +99,15 @@ definitions:
   webauthn.Credential:
     properties:
       attestationType:
-        description:
-          The attestation format used (if any) by the authenticator when
+        description: The attestation format used (if any) by the authenticator when
           creating the credential.
         type: string
       authenticator:
         allOf:
-          - $ref: "#/definitions/webauthn.Authenticator"
+        - $ref: '#/definitions/webauthn.Authenticator'
         description: The Authenticator information for a given certificate
       id:
-        description:
-          A probabilistically-unique byte sequence identifying a public
+        description: A probabilistically-unique byte sequence identifying a public
           key credential source and its authentication assertions.
         items:
           type: integer
@@ -125,58 +125,13 @@ definitions:
 info:
   contact: {}
 paths:
-  /upload:
-    post:
-      description: upload a video
-      tags:
-        - video/image
-      summary: upload a video
-      responses:
-        '200':
-          description: OK
-          schema:
-            type: multipart/form-data;
-        '404':
-          description: Not Found
-  /files:
-    get:
-      description: retreive all videos
-      consumes:
-        - "*/*"
-      produces:
-        - "application/json"
-      tags:
-        - root
-      summary: video/image
-      responses:
-        200:
-          description: OK
-          schema:
-            type: object
-            additionalProperties: true
-  /?filename=:
-    get:
-      description: retreive a video
-      consumes:
-        - "*/*"
-      produces:
-        - "file"
-      tags:
-        - root
-      summary: video/image
-      responses:
-        200:
-          description: OK
-          schema:
-            type: video
-            additionalProperties: true
   /:
     get:
       consumes:
-        - "*/*"
+      - '*/*'
       description: get the status of server.
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: OK
@@ -185,7 +140,7 @@ paths:
             type: object
       summary: Show the status of server.
       tags:
-        - root
+      - root
   /:name:
     get:
       description: get any permissions every where
@@ -198,7 +153,7 @@ paths:
           description: Not Found
       summary: get permissions
       tags:
-        - Perms
+      - Perms
   /channels/:channId:
     delete:
       description: get channel by id
@@ -211,7 +166,7 @@ paths:
           description: Not Found
       summary: get channel
       tags:
-        - Channels
+      - Channels
     get:
       description: get channel by id
       responses:
@@ -223,7 +178,7 @@ paths:
           description: Not Found
       summary: get channel
       tags:
-        - Channels
+      - Channels
     patch:
       description: get channel by id
       responses:
@@ -235,7 +190,7 @@ paths:
           description: Not Found
       summary: get channel
       tags:
-        - Channels
+      - Channels
     put:
       description: get channel by id
       responses:
@@ -247,7 +202,7 @@ paths:
           description: Not Found
       summary: get channel
       tags:
-        - Channels
+      - Channels
   /login/end/:username:
     post:
       description: end the webauthn login and update the user to session and database
@@ -260,7 +215,7 @@ paths:
           description: Not Found
       summary: end Login
       tags:
-        - Logins
+      - Logins
   /login/password/:username:
     post:
       description: set a password login for users
@@ -273,11 +228,10 @@ paths:
           description: Not Found
       summary: password Login
       tags:
-        - Logins
+      - Logins
   /login/start/:username:
     post:
-      description:
-        begin the webauthn login and update the user credential to session
+      description: begin the webauthn login and update the user credential to session
         and database
       responses:
         "200":
@@ -288,7 +242,7 @@ paths:
           description: Not Found
       summary: begin Login
       tags:
-        - Logins
+      - Logins
   /perms:
     get:
       description: get any permissions every where
@@ -301,11 +255,10 @@ paths:
           description: Not Found
       summary: get permissions
       tags:
-        - Perms
+      - Perms
   /register/end/:username:
     post:
-      description:
-        end the webauthn registration and update the user to session and
+      description: end the webauthn registration and update the user to session and
         database
       responses:
         "200":
@@ -316,7 +269,7 @@ paths:
           description: Not Found
       summary: end Registration
       tags:
-        - Registrations
+      - Registrations
   /register/password/:username:
     post:
       description: set a password registration for users
@@ -329,11 +282,10 @@ paths:
           description: Not Found
       summary: password Registration
       tags:
-        - Registrations
+      - Registrations
   /register/start/:username:
     post:
-      description:
-        begin the webauthn registration and save the user to session and
+      description: begin the webauthn registration and save the user to session and
         database
       responses:
         "200":
@@ -344,7 +296,7 @@ paths:
           description: Not Found
       summary: begin Registration
       tags:
-        - Registrations
+      - Registrations
   /roles/:
     delete:
       description: delete a role
@@ -357,7 +309,7 @@ paths:
           description: Not Found
       summary: delete a role
       tags:
-        - Roles
+      - Roles
     get:
       description: Get all roles from a channel Id
       responses:
@@ -369,7 +321,7 @@ paths:
           description: Not Found
       summary: get Roles
       tags:
-        - Roles
+      - Roles
     patch:
       description: edit a role
       responses:
@@ -381,7 +333,7 @@ paths:
           description: Not Found
       summary: patch a role
       tags:
-        - Roles
+      - Roles
     put:
       description: create a role for a specify channel
       responses:
@@ -393,7 +345,7 @@ paths:
           description: Not Found
       summary: Create a role
       tags:
-        - Roles
+      - Roles
   /roles/:roleId:
     get:
       description: Get a specific role by an Id
@@ -406,7 +358,7 @@ paths:
           description: Not Found
       summary: get Role
       tags:
-        - Roles
+      - Roles
     post:
       description: add or remove a bulk of user roles
       responses:
@@ -418,7 +370,7 @@ paths:
           description: Not Found
       summary: add or remove user
       tags:
-        - Roles
+      - Roles
   /user:
     delete:
       description: delete user account
@@ -427,7 +379,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: "#/definitions/domain.UserModel"
+              $ref: '#/definitions/domain.UserModel'
             type: array
         "404":
           description: Not Found
@@ -435,7 +387,7 @@ paths:
             type: nil
       summary: delete account
       tags:
-        - Users
+      - Users
     get:
       description: get all information about me
       responses:
@@ -447,7 +399,7 @@ paths:
           description: Not Found
       summary: Get about me
       tags:
-        - Users
+      - Users
     patch:
       description: edit user information
       responses:
@@ -455,7 +407,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: "#/definitions/domain.UserModel"
+              $ref: '#/definitions/domain.UserModel'
             type: array
         "404":
           description: Not Found
@@ -463,7 +415,7 @@ paths:
             type: nil
       summary: edit user
       tags:
-        - Users
+      - Users
   /user/cred:
     delete:
       description: delete webauthn credential
@@ -472,7 +424,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: "#/definitions/domain.UserModel"
+              $ref: '#/definitions/domain.UserModel'
             type: array
         "404":
           description: Not Found
@@ -480,7 +432,7 @@ paths:
             type: nil
       summary: delete credential
       tags:
-        - Users
+      - Users
   /user/logout:
     get:
       responses:
@@ -488,7 +440,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: "#/definitions/domain.UserModel"
+              $ref: '#/definitions/domain.UserModel'
             type: array
         "404":
           description: Not Found
@@ -496,7 +448,7 @@ paths:
             type: nil
       summary: Just Logout
       tags:
-        - Users
+      - Users
   /user/role/:roleId:
     post:
       description: add or remove roles to user
@@ -505,7 +457,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: "#/definitions/domain.UserModel"
+              $ref: '#/definitions/domain.UserModel'
             type: array
         "404":
           description: Not Found
@@ -513,7 +465,7 @@ paths:
             type: nil
       summary: roles
       tags:
-        - Users
+      - Users
   /user/subscribe/:channId:
     post:
       description: Subscribe to a channel
@@ -522,7 +474,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: "#/definitions/domain.UserModel"
+              $ref: '#/definitions/domain.UserModel'
             type: array
         "404":
           description: Not Found
@@ -530,5 +482,5 @@ paths:
             type: nil
       summary: Subscribe
       tags:
-        - Users
+      - Users
 swagger: "2.0"

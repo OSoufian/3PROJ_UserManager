@@ -15,74 +15,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/upload": {
-            "post": {
-                "description": "upload a video",
-                "tags": [
-                    "video/image"
-                ],
-                "summary": "upload a video",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "multipart/form-data;"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found"
-                    }
-                }
-            }
-        },
-        "/files": {
-            "get": {
-                "description": "retreive all videos",
-                "consumes": [
-                    "*/*"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "video/image"
-                ],
-                "summary": "video/image",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "video",
-                            "additionalProperties": true
-                        }
-                    }
-                }
-            }
-        },
-        "/?filename=": {
-            "get": {
-                "description": "retreive a video",
-                "consumes": [
-                    "*/*"
-                ],
-                "produces": [
-                    "file"
-                ],
-                "tags": [
-                    "video/image"
-                ],
-                "summary": "video/image",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "video",
-                            "additionalProperties": true
-                        }
-                    }
-                }
-            }
-        },
         "/": {
             "get": {
                 "description": "get the status of server.",
@@ -713,6 +645,9 @@ const docTemplate = `{
                 },
                 "password": {
                     "type": "string"
+                },
+                "permission": {
+                    "type": "integer"
                 },
                 "role": {
                     "type": "array",
