@@ -55,12 +55,15 @@ func about(c *fiber.Ctx) error {
 // @Tags Channels
 // @Success 200 {Channel} domain.Channel
 // @Failure 404
-// @Router /channel/:username [get]
+// @Router /user/channel/:username [get]
 func getChannelByUser(c*fiber.Ctx) error {
 	user := new(domain.UserModel)
 	user.Username = c.Params("username")
-	
-	return c.Status(200).JSON(user.GetChannel())
+	user.Get()
+	channel := new(domain.Channel)
+	channel.OwnerId = user.Id
+	channel.GetByOwner()
+	return c.Status(200).JSON(channel)
 }
 
 // Get Channel
@@ -77,7 +80,11 @@ func getUserChannel(c *fiber.Ctx) error {
 		return c.SendStatus(fiber.StatusUnauthorized)
 	}
 	user.Username = userSession.DisplayName
-	return c.Status(200).JSON(user.GetChannel())
+	user.Get()
+	channel := new(domain.Channel)
+	channel.OwnerId = user.Id
+	channel.GetByOwner()
+	return c.Status(200).JSON(channel)
 }
 
 // Logout

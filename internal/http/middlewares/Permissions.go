@@ -28,7 +28,7 @@ func Permissions(c *fiber.Ctx) error {
 
 		case "POST":
 			perm |= domain.Permissions["write_"+uri]		
-				
+
 		case "PUT":
 			perm |= domain.Permissions["write_"+uri]
 

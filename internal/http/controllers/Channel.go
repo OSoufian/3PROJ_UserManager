@@ -3,7 +3,6 @@ package controllers
 import (
 	"webauthn_api/internal/domain"
 	"webauthn_api/internal/utils"
-
 	"github.com/gofiber/fiber/v2"
 )
 

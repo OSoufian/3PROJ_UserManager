@@ -75,7 +75,6 @@ func CheckPerms(c *fiber.Ctx, bins int64) error {
 				channel.Id = uint(channelId)
 				channel = *channel.Get()
 				
-				
 				log.Println(channel.OwnerId, user.Id)
 
 				if channel.OwnerId == user.Id {

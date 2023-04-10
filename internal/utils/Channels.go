@@ -59,6 +59,7 @@ func GetChannel(c *fiber.Ctx) (domain.Channel, error) {
 
 	channel.Id = uint(chanId)
 
+	channel.Get()
 	return channel, nil
 
 }
