@@ -57,6 +57,7 @@ type UserModel struct {
 	Role          []Role    `gorm:"many2many:user_roles;  onUpdate:CASCADE; onDelete:CASCADE"`
 	webauthn.User `gorm:"-" json:"-"`
 	Credentials   []webauthn.Credential `gorm:"-"`
+	CreatedAt     time.Time `gorm:"default:CURRENT_TIMESTAMP"`
 }
 
 func (user *UserModel) TableName() string {

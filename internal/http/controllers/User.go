@@ -14,7 +14,7 @@ func UserBootstrap(app fiber.Router) {
 
 	app.Get("/", about)
 
-	app.Get("/channel", getChannel)
+	app.Get("/channel", getUserChannel)
 
 	app.Get("/channel/:username", getChannelByUser)
 
@@ -70,13 +70,13 @@ func getChannelByUser(c*fiber.Ctx) error {
 // @Success 200 {Channel} domain.Channel
 // @Failure 404
 // @Router /channel [get]
-func getChannel(c *fiber.Ctx) error {
+func getUserChannel(c *fiber.Ctx) error {
 	user := new(domain.UserModel)
 	userSession := utils.CheckAuthn(c)
 	if userSession == nil {
 		return c.SendStatus(fiber.StatusUnauthorized)
 	}
-	username = userSession.Disable
+	user.Username = userSession.DisplayName
 	return c.Status(200).JSON(user.GetChannel())
 }
 

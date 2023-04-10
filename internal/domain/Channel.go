@@ -1,5 +1,8 @@
 package domain
 
+
+import "time"
+
 type Channel struct {
 	Id          uint `gorm:"primarykey;autoIncrement;not null"`
 	OwnerId     uint `gorm:"not null; foreignKey:id onUpdate:CASCADE; onDelete:CASCADE"`
@@ -50,7 +53,7 @@ func (channel *Channel) Get() *Channel {
 func (channel *Channel) GetAllVideos() []Videos {
 	var videos []Videos 
 	Db.Joins("video_info vo ON vo.channel_id = channels.id").
-		Where("channels.id = ?", channel.id).
+		Where("channels.id = ?", channel.Id).
 		Find(videos)
 	
 	return videos
