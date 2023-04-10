@@ -10,6 +10,23 @@ type Role struct {
 	Description string      `gorm:"type:varchar(255);"`
 }
 
+const (
+	DefaultRoleName        = "everyone"
+	DefaultRoleDescription = "default permissions"
+	DefaultRolePermissions = 4607
+)
+
+func CreateDefaultRole(channelId int) *Role {
+	role := &Role{
+		ChannelId:   channelId,
+		Permission:  DefaultRolePermissions,
+		Name:        DefaultRoleName,
+		Description: DefaultRoleDescription,
+	}
+
+	return role.Create()
+}
+
 func (r *Role) TableName() string {
 	return "roles"
 }

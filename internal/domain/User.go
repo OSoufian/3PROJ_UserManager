@@ -49,7 +49,7 @@ type UserModel struct {
 	Username      string    `gorm:"type:varchar(255);not null"`
 	Email         string    `gorm:"type:varchar(255);"`
 	Password      string    `gorm:"type:varchar(255);"`
-	Permission    uint64    `gorm:"type:bigint"`
+	Permission    uint64    `gorm:"type:bigint;default:4607"`
 	Incredentials string    `gorm:"column:credentials type:text"`
 	ValideAccount bool      `gorm:"type:bool; default false"`
 	Disable       bool      `gorm:"type:bool; default false"`

@@ -18,10 +18,9 @@ func Permissions(c *fiber.Ctx) error {
 	}
 
 	var perm uint64
+	perm = 0
 
 	for _, uri := range route {
-
-		// log.Println(uri, method)
 
 		switch method {
 		case "GET":
@@ -42,6 +41,6 @@ func Permissions(c *fiber.Ctx) error {
 
 	perm |= domain.Permissions["administrator"]
 
-	return CheckPerms(c, uint64(perm))
+	return CheckPerms(c, perm)
 
 }
