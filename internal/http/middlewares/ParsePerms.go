@@ -15,6 +15,10 @@ func CheckPerms(c *fiber.Ctx, bins int64) error {
 	path := string(c.Request().URI().Path())
 	route := strings.Split(path, "/")
 
+	if len(route) == 1 && strings.Contains(path, "files") {
+		return c.Next()
+	}
+
 	var (
 		perm      int64
 		channPerm int64
