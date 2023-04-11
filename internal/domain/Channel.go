@@ -1,12 +1,9 @@
 package domain
 
-
-import "time"
-
 type Channel struct {
-	Id          uint `gorm:"primarykey;autoIncrement;not null"`
-	OwnerId     uint `gorm:"not null; foreignKey:id onUpdate:CASCADE; onDelete:CASCADE"`
-	Owner       UserModel	`json:"-"`
+	Id          uint        `gorm:"primarykey;autoIncrement;not null"`
+	OwnerId     uint        `gorm:"not null; foreignKey:id onUpdate:CASCADE; onDelete:CASCADE"`
+	Owner       UserModel   `json:"-"`
 	Description string      `gorm:"type:varchar(255);"`
 	SocialLink  string      `gorm:"type:varchar(255);"`
 	Banner      string      `gorm:"type:varchar(255);"`
@@ -16,19 +13,19 @@ type Channel struct {
 
 type UserChannelPermission struct {
 	Permission int64 `gorm:"column:permission"`
-	Weight 	   int 	  `gorm:"column:weight"`
+	Weight     int   `gorm:"column:weight"`
 }
 
 type Videos struct {
-	Id           uint      `gorm:"primarykey;autoIncrement;not null"`
-	Name         string    `gorm:"type:varchar(255);"`
-	Description  string    `gorm:"type:varchar(255);"`
-	Icon         string    `gorm:"type:varchar(255);"`
-	VideoURL     string    `gorm:"type:varchar(255);"`
-	Views        int       `gorm:"type:integer default:0"`
-	ChannelId    uint      `gorm:"foreignKey:id"`
-	CreationDate time.Time `gorm:"type:datetime"`
-	IsBlock      bool      `gorm:"type:boolean;default:false"`
+	Id          uint   `gorm:"primarykey;autoIncrement;not null"`
+	Name        string `gorm:"type:varchar(255);"`
+	Description string `gorm:"type:varchar(255);"`
+	Icon        string `gorm:"type:varchar(255);"`
+	VideoURL    string `gorm:"type:varchar(255);"`
+	Views       int    `gorm:"type:integer default:0"`
+	ChannelId   uint   `gorm:"foreignKey:id"`
+	CreatedAt   string `gorm:"type:time without time zone"`
+	IsBlock     bool   `gorm:"type:boolean;default:false"`
 }
 
 func (videos Videos) TableName() string {
@@ -49,13 +46,12 @@ func (channel *Channel) Get() *Channel {
 	return channel
 }
 
-
 func (channel *Channel) GetAllVideos() []Videos {
-	var videos []Videos 
+	var videos []Videos
 	Db.Joins("video_info vo ON vo.channel_id = channels.id").
 		Where("channels.id = ?", channel.Id).
 		Find(videos)
-	
+
 	return videos
 }
 
@@ -98,7 +94,6 @@ func (channel *Channel) GetUserRole(user UserModel) ([]UserChannelPermission, er
 	return perms, nil
 
 }
-
 
 func (channel *Channel) Create() *Channel {
 	tx := Db.Create(channel)
