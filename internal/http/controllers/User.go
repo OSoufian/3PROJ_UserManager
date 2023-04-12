@@ -51,7 +51,7 @@ func about(c *fiber.Ctx) error {
 
 // Get Channel by username
 // @Summary Get channel of the user by username
-// @Description get all videos of the user by username
+// @Description get all video of the user by username
 // @Tags Channels
 // @Success 200 {Channel} domain.Channel
 // @Failure 404
@@ -68,7 +68,7 @@ func getChannelByUser(c *fiber.Ctx) error {
 
 // Get Channel
 // @Summary Get channel of the user
-// @Description get all videos of the user
+// @Description get all video of the user
 // @Tags Channels
 // @Success 200 {Channel} domain.Channel
 // @Failure 404

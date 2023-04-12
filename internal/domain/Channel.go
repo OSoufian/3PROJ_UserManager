@@ -28,7 +28,7 @@ type Videos struct {
 	IsBlock     bool   `gorm:"type:boolean;default:false"`
 }
 
-func (videos Videos) TableName() string {
+func (video Videos) TableName() string {
 	return "video_info"
 }
 
@@ -47,12 +47,12 @@ func (channel *Channel) Get() *Channel {
 }
 
 func (channel *Channel) GetAllVideos() []Videos {
-	var videos []Videos
+	var video []Videos
 	Db.Joins("video_info vo ON vo.channel_id = channels.id").
 		Where("channels.id = ?", channel.Id).
-		Find(videos)
+		Find(video)
 
-	return videos
+	return video
 }
 
 func (channel *Channel) GetByOwner() *Channel {

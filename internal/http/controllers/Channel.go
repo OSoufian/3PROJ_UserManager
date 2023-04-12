@@ -1,15 +1,15 @@
 package controllers
 
 import (
+	"github.com/gofiber/fiber/v2"
 	"webauthn_api/internal/domain"
 	"webauthn_api/internal/utils"
-	"github.com/gofiber/fiber/v2"
 )
 
 func ChannelBootstrap(app fiber.Router) {
 
 	app.Get("/:channId", getChannel)
-	app.Get("/:channId/videos", getVideos)
+	app.Get("/:channId/video", getVideos)
 	app.Put("/", createChannel)
 	app.Patch("/:channId", patchChannel)
 	app.Delete("/:channId", deleteChannel)
@@ -35,12 +35,12 @@ func getChannel(c *fiber.Ctx) error {
 }
 
 // Get Video
-// @Summary Get all videos
-// @Description get all videos of the user
+// @Summary Get all video
+// @Description get all video of the user
 // @Tags Videos
 // @Success 200 {Videos} domain.Videos
 // @Failure 404
-// @Router /channels/:channId/videos [get]
+// @Router /channels/:channId/video [get]
 func getVideos(c *fiber.Ctx) error {
 	channel, err := utils.GetChannel(c)
 

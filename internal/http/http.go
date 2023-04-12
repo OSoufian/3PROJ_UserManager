@@ -72,7 +72,7 @@ func Http() *fiber.App {
 
 	controllers.ChannelBootstrap(app.Group("/channel"))
 
-	// middlewares.OthersApi(app.Group("/"))
+	middlewares.OthersApi(app.Group("/"))
 
 	return app
 }

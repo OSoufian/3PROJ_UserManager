@@ -12,12 +12,16 @@ func Permissions(c *fiber.Ctx) error {
 
 	route := strings.Split(path, "/")
 
+	if strings.Contains(path, "user") {
+		return c.Next()
+	}
+
 	method := c.Method()
 	if method == "POST" && (strings.Contains(path, "login") || strings.Contains(path, "register")) {
 		return c.Next()
 	}
 
-	if method == "GET" && (strings.Contains(path, "monitor") || strings.Contains(path, "swagger") || strings.Contains(path, "user")) {
+	if method == "GET" && (strings.Contains(path, "monitor") || strings.Contains(path, "swagger")) {
 		return c.Next()
 	}
 
