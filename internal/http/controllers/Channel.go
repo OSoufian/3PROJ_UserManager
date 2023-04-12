@@ -66,7 +66,9 @@ func createChannel(c *fiber.Ctx) error {
 	user := domain.UserModel{}
 	user.Username = session.DisplayName
 	channel.OwnerId = user.Get().Id
-	if user.Get() == nil || channel.GetByOwner() != nil {
+
+	channel, err := channel.GetByOwner()
+	if user.Get() == nil || err == nil {
 		return c.SendStatus(fiber.StatusForbidden)
 	}
 

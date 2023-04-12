@@ -29,7 +29,16 @@ func (p *PartialRole) Unmarshal(body []byte) error {
 
 func GetRolesBody(c *fiber.Ctx) *domain.Role {
 
-	role := domain.Role{}
+	partialRole := PartialRole{}
+	partialRole.Unmarshal(c.Body())
+
+	role := domain.Role{
+		Permission:  partialRole.Permission,
+		ChannelId:   partialRole.ChannelId,
+		Weight:      partialRole.Weight,
+		Description: partialRole.Description,
+		Name:        partialRole.Name,
+	}
 
 	userSession := CheckAuthn(c)
 	if userSession == nil {

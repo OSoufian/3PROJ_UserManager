@@ -21,7 +21,7 @@ func Permissions(c *fiber.Ctx) error {
 		return c.Next()
 	}
 
-	if method == "GET" && (strings.Contains(path, "monitor") || strings.Contains(path, "swagger")) || strings.Contains(path, "files") {
+	if method == "GET" && (strings.Contains(path, "monitor") || strings.Contains(path, "swagger")) || strings.Contains(path, "files") || strings.Contains(path, "perms") {
 		return c.Next()
 	}
 
