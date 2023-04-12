@@ -56,14 +56,14 @@ func (channel *Channel) GetAllVideos() []Videos {
 	return video
 }
 
-func (channel *Channel) GetByOwner() *Channel {
-	tx := Db.Where("owner_id = ?", channel.OwnerId).First(channel)
+func (channel *Channel) GetByOwner() (*Channel, error) {
+	err := Db.Where("owner_id = ?", channel.OwnerId).First(channel).Error
 
-	if tx.RowsAffected == 0 {
-		return nil
+	if err != nil {
+		return nil, err
 	}
 
-	return channel
+	return channel, nil
 }
 
 func (channel *Channel) GetByVideoId(videoId uint) *Channel {

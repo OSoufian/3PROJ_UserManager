@@ -155,7 +155,18 @@ func editRole(c *fiber.Ctx) error {
 	userIn.Username = userSession.DisplayName
 	userIn = userIn.Get()
 
-	roleId, err := strconv.ParseInt(c.Params("channId"), 10, len(c.Params("roleId")))
+	channel := domain.Channel{
+		Owner:   *userIn,
+		OwnerId: userIn.Id,
+	}
+
+	_, err := channel.GetByOwner()
+
+	if err != nil {
+		return c.SendStatus(fiber.StatusUnauthorized)
+	}
+
+	roleId, err := strconv.ParseInt(c.Params("roleId"), 10, 64)
 
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
