@@ -23,7 +23,7 @@ type Videos struct {
 	Icon        string `gorm:"type:varchar(255);"`
 	VideoURL    string `gorm:"type:varchar(255);"`
 	Views       int    `gorm:"type:integer default:0"`
-	ChannelId   uint   `gorm:"foreignKey:id"`
+	channId     uint   `gorm:"foreignKey:id"`
 	CreatedAt   string `gorm:"type:time without time zone"`
 	IsBlock     bool   `gorm:"type:boolean;default:false"`
 }
@@ -79,12 +79,14 @@ func (channel *Channel) GetByVideoId(videoId uint) *Channel {
 func (channel *Channel) GetUserRole(user UserModel) ([]UserChannelPermission, error) {
 	var perms []UserChannelPermission
 	err := Db.
-		Joins("JOIN roles r ON r.id = role_id").
-		Joins("JOIN users u ON u.id = user_model_id").
-		Where("channel_id = ? AND u.id = ?", channel.Id, user.Id).
+		Table("channels").
 		Select("r.permission, r.weight").
-		Find(perms).
+		Joins("JOIN roles r ON r.channel_id = channels.id").
+		Joins("JOIN user_roles ur ON ur.role_id = r.id").
+		Joins("JOIN users u ON u.id = ur.user_model_id").
+		Where("channels.id = ? AND u.id = ?", channel.Id, user.Id).
 		Order("r.weight DESC").
+		Scan(&perms).
 		Error
 
 	if err != nil {

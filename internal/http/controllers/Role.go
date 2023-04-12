@@ -9,19 +9,19 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func RoleBootstrap(app fiber.Router) {
+func RoleBootstrap(router fiber.Router) {
 
-	app.Get("/:roleId", getRole)
+	router.Get("/:roleId", getRole)
 
-	app.Get("/:channId", getRoles)
+	router.Get("/channel/:channId", getRoles)
 
-	app.Post("/:roleId", usersRole)
+	router.Post("/:roleId", usersRole)
 
-	app.Put("/:channId", createRole)
+	router.Put("/:channId", createRole)
 
-	app.Patch("/:roleId", patchRole)
+	router.Patch("/:roleId", patchRole)
 
-	app.Delete("/:roleId", deleteRole)
+	router.Delete("/:roleId", deleteRole)
 
 }
 
@@ -33,7 +33,7 @@ func RoleBootstrap(app fiber.Router) {
 // @Failure 404
 // @Router /roles/:roleId [get]
 func getRole(c *fiber.Ctx) error {
-	roleId, err := strconv.ParseInt(c.Params("roleId"), 10, len(c.Params("roleId")))
+	roleId, err := strconv.ParseInt(c.Params("roleId"), 10, 64)
 
 	if err != nil {
 		return c.Status(fiber.ErrBadRequest.Code).JSON(err.Error())
@@ -41,7 +41,8 @@ func getRole(c *fiber.Ctx) error {
 
 	role := domain.Role{}
 	role.Id = uint(roleId)
-	return c.Status(200).JSON(role.Get())
+	roles, _ := role.Get()
+	return c.Status(200).JSON(roles)
 }
 
 // Get Roles
@@ -69,7 +70,7 @@ func getRoles(c *fiber.Ctx) error {
 // @Failure 404
 // @Router /roles/:roleId [post]
 func usersRole(c *fiber.Ctx) error {
-	roleId, err := strconv.ParseInt(c.Params("roleId"), 10, len(c.Params("roleId")))
+	roleId, err := strconv.ParseInt(c.Params("roleId"), 10, 64)
 
 	if err != nil {
 		return c.Status(fiber.ErrBadRequest.Code).JSON(err.Error())
@@ -77,15 +78,17 @@ func usersRole(c *fiber.Ctx) error {
 
 	role := domain.Role{}
 	role.Id = uint(roleId)
-	role = *role.Get()
+	r, _ := role.Get()
+	role = *r
 	usersName := utils.UserRoles{}
 	if err := usersName.Unmarshal(c.Body()); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(err)
 	}
+
 	for _, v := range usersName.Usernames {
 		tmpUser := domain.UserModel{}
 		tmpUser.Username = v
-		role.User = append(role.User, *tmpUser.Get())
+		role.Users = append(role.Users, *tmpUser.Get())
 	}
 
 	role.Update()
@@ -100,7 +103,7 @@ func usersRole(c *fiber.Ctx) error {
 // @Tags Roles
 // @Success 200 {Role} domain.Role
 // @Failure 404
-// @Router /roles/ [put]
+// @Router /roles/:channId [put]
 func createRole(c *fiber.Ctx) error {
 
 	return c.Status(201).JSON(utils.GetRolesBody(c).Create())
@@ -116,7 +119,7 @@ func createRole(c *fiber.Ctx) error {
 // @Router /roles/ [patch]
 func patchRole(c *fiber.Ctx) error {
 
-	return c.Status(200).JSON(utils.GetRolesBody(c).Update().Update())
+	return c.Status(200).JSON(utils.GetRolesBody(c).Update())
 
 }
 
@@ -128,7 +131,7 @@ func patchRole(c *fiber.Ctx) error {
 // @Failure 404
 // @Router /roles/ [delete]
 func deleteRole(c *fiber.Ctx) error {
-	roleId, err := strconv.ParseInt(c.Params("roleId"), 10, len(c.Params("roleId")))
+	roleId, err := strconv.ParseInt(c.Params("roleId"), 10, 64)
 
 	if err != nil {
 		return c.Status(fiber.ErrBadRequest.Code).JSON(err.Error())
@@ -136,7 +139,8 @@ func deleteRole(c *fiber.Ctx) error {
 
 	role := domain.Role{}
 	role.Id = uint(roleId)
-	role = *role.Get()
+	r, _ := role.Get()
+	role = *r
 
 	role.Delete()
 

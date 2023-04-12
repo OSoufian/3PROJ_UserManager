@@ -66,14 +66,11 @@ func registrationStart(c *fiber.Ctx) error {
 	session.SessionData = sessionData
 	session.Expiration = 3600
 
+	sessions[user.Username] = session
+	utils.Sessions = sessions
+
 	go session.DeleteAfter(utils.Sessions)
 
-	sessions[user.Username] = session
-
-	log.Println(sessions)
-
-	utils.Sessions = sessions
-	
 	return c.JSON(fiber.Map{
 		"Options": options,
 	})
@@ -99,13 +96,12 @@ func registerEnd(c *fiber.Ctx) error {
 		})
 	}
 
-
 	if !user.Find() {
 		return c.Status(403).JSON(fiber.Map{
 			"message": "not found",
 		})
 	}
-	
+
 	log.Println(utils.Sessions)
 
 	session, ok := utils.Sessions[user.Username]
@@ -143,7 +139,6 @@ func registerEnd(c *fiber.Ctx) error {
 	session.Jwt = token
 	utils.Sessions[user.Username] = session
 
-	
 	go session.DeleteAfter(utils.Sessions)
 
 	return c.JSON(fiber.Map{

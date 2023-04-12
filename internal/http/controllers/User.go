@@ -56,7 +56,7 @@ func about(c *fiber.Ctx) error {
 // @Success 200 {Channel} domain.Channel
 // @Failure 404
 // @Router /user/channel/:username [get]
-func getChannelByUser(c*fiber.Ctx) error {
+func getChannelByUser(c *fiber.Ctx) error {
 	user := new(domain.UserModel)
 	user.Username = c.Params("username")
 	user.Get()
@@ -164,12 +164,15 @@ func editRole(c *fiber.Ctx) error {
 	role := domain.Role{}
 
 	role.Id = uint(roleId)
-	role = *role.Get()
-
+	r, err := role.Get()
+	if err != nil {
+		return c.SendStatus(fiber.StatusInternalServerError)
+	}
+	role = *r
 	if index := utils.HasRole(*userIn, role); index != -1 {
-		userIn.Role = append(userIn.Role[:index], userIn.Role[index+1:]...)
+		userIn.Roles = append(userIn.Roles[:index], userIn.Roles[index+1:]...)
 	} else {
-		userIn.Role = append(userIn.Role, role)
+		userIn.Roles = append(userIn.Roles, role)
 	}
 
 	userIn.Update()

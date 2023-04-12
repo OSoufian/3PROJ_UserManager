@@ -24,7 +24,7 @@ definitions:
     properties:
       channel:
         $ref: '#/definitions/domain.Channel'
-      channelId:
+      channId:
         type: integer
       description:
         type: string

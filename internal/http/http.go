@@ -46,7 +46,7 @@ func Http() *fiber.App {
 		Level: compress.LevelBestSpeed,
 	}))
 
-	app.Use(middlewares.CSRF())
+	// app.Use(middlewares.CSRF())
 	// app.Use(middlewares.EncryptCookie())
 
 	app.Use(middlewares.Permissions)
@@ -72,7 +72,7 @@ func Http() *fiber.App {
 
 	controllers.ChannelBootstrap(app.Group("/channel"))
 
-	middlewares.OthersApi(app.Group("/"))
+	// middlewares.OthersApi(app.Group("/"))
 
 	return app
 }

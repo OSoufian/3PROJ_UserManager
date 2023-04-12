@@ -8,13 +8,15 @@ import (
 )
 
 type PartialRole struct {
-	Permission  int64 `json:"permission"`
+	Permission  int64  `json:"permission"`
 	Name        string `json:"name"`
+	ChannelId   int    `json:"channel_id"`
 	Description string `json:"description"`
+	Weight      int    `json:"weight"`
 }
 
 type UserRoles struct {
-	Usernames []string
+	Usernames []string `json:"usernames"`
 }
 
 func (ur *UserRoles) Unmarshal(body []byte) error {
@@ -32,6 +34,14 @@ func GetRolesBody(c *fiber.Ctx) *domain.Role {
 	userSession := CheckAuthn(c)
 	if userSession == nil {
 		return &role
+	}
+	user := domain.UserModel{
+		Username: userSession.DisplayName,
+	}
+	user.Get()
+
+	if user.Permission&domain.Permissions["administrator"] != domain.Permissions["administrator"] {
+		role.Permission &= ^domain.Permissions["administrator"]
 	}
 
 	channel, err := GetChannel(c)

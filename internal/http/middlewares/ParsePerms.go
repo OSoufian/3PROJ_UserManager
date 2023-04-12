@@ -22,11 +22,12 @@ func CheckPerms(c *fiber.Ctx, bins int64) error {
 	var (
 		perm      int64
 		channPerm int64
+		rolePerm  int64
 	)
 	perm = 0
 
 	if session == nil {
-		perm |= 4607
+		perm |= 0
 
 	} else {
 		user := domain.UserModel{}
@@ -51,41 +52,47 @@ func CheckPerms(c *fiber.Ctx, bins int64) error {
 				perms, err := channel.GetUserRole(user)
 				if err == nil {
 					// user.Permission |= perms.Permission // permissions order ASC
+
 					for _, p := range perms {
-						channPerm |= p.Permission
+						rolePerm = ^rolePerm | rolePerm&p.Permission
 					}
+
+					channPerm |= rolePerm
 				} else {
 					log.Println(err)
 				}
 			}
 		}
 
-		if strings.Contains(path, "channel") || c.Query("channelId") != "" {
+		if strings.Contains(path, "channel") || c.Params("channId") != "" || c.Query("channId") != "" {
 			var (
-				channelId int64
-				err       error
+				channId int64
+				err     error
 			)
 
 			if strings.Contains(path, "channel") && len(route) > 1 {
-				channelId, err = strconv.ParseInt(route[len(route)-1], 10, 64)
+				channId, err = strconv.ParseInt(route[len(route)-1], 10, 64)
+			} else if c.Query("channId") != "" {
+				channId, err = strconv.ParseInt(c.Query("channId"), 10, 64)
 			} else {
-				channelId, err = strconv.ParseInt(c.Query("channelId"), 10, 64)
+				channId, err = strconv.ParseInt(c.Params("channId"), 10, 64)
 			}
 
 			if err != nil {
 				log.Println("Error parsing channel ID:", err)
 			} else {
-				channel.Id = uint(channelId)
+				channel.Id = uint(channId)
 				channel = *channel.Get()
 
 				if channel.OwnerId == user.Id {
 					return c.Next()
 				}
 
-				perms, err := channel.GetUserRole(user)
+				channelPerms, err := channel.GetUserRole(user)
+
 				if err == nil {
 					// user.Permission |= perms.Permission // permissions order ASC
-					for _, p := range perms {
+					for _, p := range channelPerms {
 						channPerm |= p.Permission
 					}
 				} else {

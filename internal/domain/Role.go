@@ -1,12 +1,12 @@
 package domain
 
 type Role struct {
-	Id          uint 		`gorm:"primarykey;autoIncrement;not null"`
+	Id          uint `gorm:"primarykey;autoIncrement;not null"`
 	ChannelId   int
-	Channel     Channel     `gorm:"foreignKey:ChannelId; onUpdate:CASCADE; onDelete:CASCADE"`
-	User        []UserModel `gorm:"many2many:user_roles; onUpdate:CASCADE; onDelete:CASCADE"`
-	Weight 		int 		`gorm:"integer"`
-	Permission  int64      `gorm:"type:bigint"`
+	Channel     Channel     `gorm:"foreignKey:channel_id; onUpdate:CASCADE; onDelete:CASCADE"`
+	Users       []UserModel `gorm:"many2many:user_roles; onUpdate:CASCADE; onDelete:CASCADE"`
+	Weight      int         `gorm:"integer"`
+	Permission  int64       `gorm:"type:bigint"`
 	Name        string      `gorm:"type:varchar(255);"`
 	Description string      `gorm:"type:varchar(255);"`
 }
@@ -17,9 +17,9 @@ const (
 	DefaultRolePermissions = 4607
 )
 
-func CreateDefaultRole(channelId int) *Role {
+func CreateDefaultRole(channId int) *Role {
 	role := &Role{
-		ChannelId:   channelId,
+		ChannelId:   channId,
 		Permission:  DefaultRolePermissions,
 		Name:        DefaultRoleName,
 		Description: DefaultRoleDescription,
@@ -64,14 +64,14 @@ func (u *UserModel) GetRoles() []Role {
 	return r
 }
 
-func (r *Role) Get() *Role {
-	tx := Db.Where("id = ?", r.Id).First(r)
+func (r *Role) Get() (*Role, error) {
+	err := Db.Where("id = ?", r.Id).First(r).Error
 
-	if tx.RowsAffected == 0 {
-		return nil
+	if err != nil {
+		return nil, err
 	}
 
-	return r
+	return r, nil
 }
 
 func (r *Role) Update() *Role {

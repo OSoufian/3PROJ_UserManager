@@ -14,7 +14,7 @@ func ContainsChannel(user domain.UserModel, channel domain.Channel) int {
 
 func HasRole(user domain.UserModel, role domain.Role) int {
 
-	for k, a := range user.Role {
+	for k, a := range user.Roles {
 		if isSub := a; isSub.Id == role.Id && role.Name == isSub.Name {
 			return k
 		}

@@ -596,7 +596,7 @@ const docTemplate = `{
                 "channel": {
                     "$ref": "#/definitions/domain.Channel"
                 },
-                "channelId": {
+                "channId": {
                     "type": "integer"
                 },
                 "description": {

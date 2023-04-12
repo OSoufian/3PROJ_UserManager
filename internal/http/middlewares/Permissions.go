@@ -9,11 +9,15 @@ import (
 
 func Permissions(c *fiber.Ctx) error {
 	path := string(c.Request().URI().Path())
+
 	route := strings.Split(path, "/")
 
 	method := c.Method()
+	if method == "POST" && (strings.Contains(path, "login") || strings.Contains(path, "register")) {
+		return c.Next()
+	}
 
-	if method == "GET" && (strings.Contains(path, "monitor") || strings.Contains(path, "swagger") || strings.Contains(path, "login") || strings.Contains(path, "register") || strings.Contains(path, "user")) {
+	if method == "GET" && (strings.Contains(path, "monitor") || strings.Contains(path, "swagger") || strings.Contains(path, "user")) {
 		return c.Next()
 	}
 
@@ -27,7 +31,7 @@ func Permissions(c *fiber.Ctx) error {
 			perm |= domain.Permissions["read_"+uri]
 
 		case "POST":
-			perm |= domain.Permissions["write_"+uri]		
+			perm |= domain.Permissions["write_"+uri]
 
 		case "PUT":
 			perm |= domain.Permissions["write_"+uri]
