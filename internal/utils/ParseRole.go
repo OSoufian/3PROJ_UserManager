@@ -35,8 +35,10 @@ func GetRolesBody(c *fiber.Ctx) *domain.Role {
 
 	role := domain.Role{}
 	role.Id = uint(partialRole.Id)
-	tmprole, _ := role.Get()
-	role = *tmprole
+	_, err := role.Get()
+	if err != nil {
+
+	}
 
 	role.Description = partialRole.Description
 	role.Name = partialRole.Name

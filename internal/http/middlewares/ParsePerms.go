@@ -64,7 +64,7 @@ func CheckPerms(c *fiber.Ctx, bins int64) error {
 			}
 		}
 
-		if strings.Contains(path, "channel") || c.Params("channId") != "" || c.Query("channId") != "" {
+		if strings.Contains(path, "channel") || c.Query("channId") != "" {
 			var (
 				channId int64
 				err     error
@@ -74,10 +74,6 @@ func CheckPerms(c *fiber.Ctx, bins int64) error {
 				channId, err = strconv.ParseInt(route[len(route)-1], 10, 64)
 			} else if c.Query("channId") != "" {
 				channId, err = strconv.ParseInt(c.Query("channId"), 10, 64)
-			} else {
-
-				return c.Next()
-				// channId, err = strconv.ParseInt(c.Params("channId"), 10, 64)
 			}
 
 			if err != nil {
@@ -110,6 +106,7 @@ func CheckPerms(c *fiber.Ctx, bins int64) error {
 	if perm != 0 {
 		return c.Next()
 	} else {
-		return c.SendStatus(fiber.StatusUnauthorized)
+
+		return c.Status(fiber.StatusUnauthorized).SendString("Not enought Permissions")
 	}
 }
