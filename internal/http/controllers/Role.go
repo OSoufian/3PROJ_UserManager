@@ -124,8 +124,9 @@ func createRole(c *fiber.Ctx) error {
 // @Failure 404
 // @Router /roles/ [patch]
 func patchRole(c *fiber.Ctx) error {
+	role := utils.GetRolesBody(c)
 
-	return c.Status(200).JSON(utils.GetRolesBody(c).Update())
+	return c.Status(200).JSON(role.Update())
 
 }
 

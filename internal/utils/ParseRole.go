@@ -8,11 +8,12 @@ import (
 )
 
 type PartialRole struct {
-	Permission  int64  `json:"permission"`
-	Name        string `json:"name"`
-	ChannelId   int    `json:"channel_id"`
-	Description string `json:"description"`
-	Weight      int    `json:"weight"`
+	Id          int
+	Permission  int64
+	Name        string
+	ChannelId   int
+	Description string
+	Weight      int
 }
 
 type UserRoles struct {
@@ -32,13 +33,23 @@ func GetRolesBody(c *fiber.Ctx) *domain.Role {
 	partialRole := PartialRole{}
 	partialRole.Unmarshal(c.Body())
 
-	role := domain.Role{
-		Permission:  partialRole.Permission,
-		ChannelId:   partialRole.ChannelId,
-		Weight:      partialRole.Weight,
-		Description: partialRole.Description,
-		Name:        partialRole.Name,
+	role := domain.Role{}
+	role.Id = uint(partialRole.Id)
+	tmprole, _ := role.Get()
+	role = *tmprole
+
+	role.Description = partialRole.Description
+	role.Name = partialRole.Name
+	role.Weight = partialRole.Weight
+	role.Permission = partialRole.Permission
+
+	channel := domain.Channel{
+		Id: uint(partialRole.ChannelId),
 	}
+
+	channel.Get()
+	role.Channel = channel
+	role.ChannelId = int(channel.Id)
 
 	userSession := CheckAuthn(c)
 	if userSession == nil {
@@ -52,12 +63,6 @@ func GetRolesBody(c *fiber.Ctx) *domain.Role {
 	if user.Permission&domain.Permissions["administrator"] != domain.Permissions["administrator"] {
 		role.Permission &= ^domain.Permissions["administrator"]
 	}
-
-	channel, err := GetChannel(c)
-	if err != nil {
-		c.Status(fiber.ErrBadRequest.Code).JSON(err.Error())
-	}
-	role.Channel = *channel.Get()
 
 	return &role
 }
