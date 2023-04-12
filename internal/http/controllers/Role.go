@@ -58,7 +58,13 @@ func getRoles(c *fiber.Ctx) error {
 		c.Status(fiber.ErrBadRequest.Code).JSON(err.Error())
 	}
 
-	return c.Status(200).JSON(channel.GetRoles())
+	roles, err := channel.GetRoles()
+
+	if err != nil {
+		return c.SendStatus(fiber.StatusInternalServerError)
+	}
+
+	return c.Status(200).JSON(roles)
 
 }
 

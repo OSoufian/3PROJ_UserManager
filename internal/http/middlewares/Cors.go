@@ -10,7 +10,7 @@ func CORS() fiber.Handler {
 		Next:             nil,
 		AllowOrigins:     "*",
 		AllowMethods:     "GET,POST,HEAD,PUT,DELETE,PATCH",
-		AllowHeaders:     "*",
+		AllowHeaders:     "",
 		AllowCredentials: true,
 		ExposeHeaders:    "",
 		MaxAge:           0,

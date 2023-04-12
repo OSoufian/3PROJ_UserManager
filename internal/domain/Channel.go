@@ -4,6 +4,7 @@ type Channel struct {
 	Id          uint        `gorm:"primarykey;autoIncrement;not null"`
 	OwnerId     uint        `gorm:"not null; foreignKey:id onUpdate:CASCADE; onDelete:CASCADE"`
 	Owner       UserModel   `json:"-"`
+	Name        string      `gorm:"type:varchar(255);"`
 	Description string      `gorm:"type:varchar(255);"`
 	SocialLink  string      `gorm:"type:varchar(255);"`
 	Banner      string      `gorm:"type:varchar(255);"`

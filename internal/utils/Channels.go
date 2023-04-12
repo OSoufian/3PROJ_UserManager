@@ -9,6 +9,9 @@ import (
 )
 
 type PartialChannel struct {
+	Id          int
+	OwnerId     int
+	Name        string
 	Description string
 	SocialLink  string
 	Banner      string
@@ -30,6 +33,8 @@ func ParseChannel(c *fiber.Ctx) *domain.Channel {
 	partial.Unmarshal(c.Body())
 
 	channel := domain.Channel{}
+	channel.Id = uint(partial.Id)
+	channel.Get()
 
 	if partial.Banner != "" {
 		channel.Banner = partial.Banner

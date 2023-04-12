@@ -75,7 +75,9 @@ func CheckPerms(c *fiber.Ctx, bins int64) error {
 			} else if c.Query("channId") != "" {
 				channId, err = strconv.ParseInt(c.Query("channId"), 10, 64)
 			} else {
-				channId, err = strconv.ParseInt(c.Params("channId"), 10, 64)
+
+				return c.Next()
+				// channId, err = strconv.ParseInt(c.Params("channId"), 10, 64)
 			}
 
 			if err != nil {

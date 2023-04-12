@@ -1,9 +1,10 @@
 package controllers
 
 import (
-	"github.com/gofiber/fiber/v2"
 	"webauthn_api/internal/domain"
 	"webauthn_api/internal/utils"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 func ChannelBootstrap(app fiber.Router) {
@@ -80,8 +81,9 @@ func createChannel(c *fiber.Ctx) error {
 // @Failure 404
 // @Router /channels/:channId [patch]
 func patchChannel(c *fiber.Ctx) error {
-
-	return c.Status(fiber.StatusAccepted).JSON(utils.ParseChannel(c).Update())
+	channel := utils.ParseChannel(c)
+	channel.Update()
+	return c.Status(fiber.StatusAccepted).JSON(channel)
 }
 
 // Delete Channel

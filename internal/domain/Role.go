@@ -42,15 +42,13 @@ func (r *Role) Create() *Role {
 	return r
 }
 
-func (c *Channel) GetRoles() []Role {
-	r := []Role{}
-	tx := Db.Where("channel_id = ?", c.Id).Find(r)
-
-	if tx.RowsAffected == 0 {
-		return nil
+func (c *Channel) GetRoles() ([]Role, error) {
+	var r []Role
+	err := Db.Where("channel_id = ?", c.Id).Find(&r).Error
+	if err != nil {
+		return nil, err
 	}
-
-	return r
+	return r, nil
 }
 
 func (u *UserModel) GetRoles() []Role {
