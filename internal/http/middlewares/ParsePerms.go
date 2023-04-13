@@ -96,6 +96,10 @@ func CheckPerms(c *fiber.Ctx, bins int64) error {
 				} else {
 					log.Println(err)
 				}
+
+				if (channPerm & domain.Permissions["admin"]) == domain.Permissions["admin"] {
+					return c.Next()
+				}
 			}
 		}
 
