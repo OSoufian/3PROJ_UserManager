@@ -76,15 +76,17 @@ func CheckPerms(c *fiber.Ctx, bins int64) error {
 				channId, err = strconv.ParseInt(c.Query("channId"), 10, 64)
 			}
 
+			userChannel, err := user.GetChannel()
+
+			if err == nil && uint(channId) == userChannel.Id {
+				return c.Next()
+			}
+
 			if err != nil {
 				log.Println("Error parsing channel ID:", err)
 			} else {
 				channel.Id = uint(channId)
 				channel = *channel.Get()
-
-				if channel.OwnerId == user.Id {
-					return c.Next()
-				}
 
 				channelPerms, err := channel.GetUserRole(user)
 
@@ -101,16 +103,18 @@ func CheckPerms(c *fiber.Ctx, bins int64) error {
 					return c.Next()
 				}
 			}
-		}
 
-		bins |= channPerm
-		perm |= (user.Permission & bins)
+			bins |= channPerm
+			perm |= bins
+		} else {
+			perm |= (user.Permission & bins)
+		}
 	}
 
 	if perm != 0 {
 		return c.Next()
 	} else {
-
+		log.Println(session.DisplayName, "is unauthorized to make >", c.Method(), "on this route >", string(c.Request().URI().Path()))
 		return c.Status(fiber.StatusUnauthorized).SendString("Not enought Permissions")
 	}
 }

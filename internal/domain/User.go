@@ -78,11 +78,13 @@ func (user *UserModel) SaveCredentials() error {
 	return tx.Error
 }
 
-func (user *UserModel) GetChannel() Channel {
-	var channel Channel
-	Db.Where("owner_id = ? ", user.Id).First(channel)
-
-	return channel
+func (user *UserModel) GetChannel() (*Channel, error) {
+	var channel *Channel
+	err := Db.Where("owner_id = ? ", user.Id).First(&channel).Error
+	if err != nil {
+		return nil, err
+	}
+	return channel, nil
 
 }
 
