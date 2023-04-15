@@ -112,7 +112,13 @@ func usersRole(c *fiber.Ctx) error {
 // @Router /roles/:channId [put]
 func createRole(c *fiber.Ctx) error {
 
-	return c.Status(201).JSON(utils.GetRolesBody(c).Create())
+	role, err := utils.GetRolesBody(c).Create()
+
+	if err != nil {
+		return c.SendStatus(fiber.StatusInternalServerError)
+	}
+
+	return c.Status(200).JSON(role)
 
 }
 

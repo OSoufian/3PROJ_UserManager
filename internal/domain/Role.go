@@ -1,11 +1,13 @@
 package domain
 
+import "errors"
+
 type Role struct {
 	Id          uint `gorm:"primarykey;autoIncrement;not null"`
 	ChannelId   int
 	Channel     Channel     `gorm:"foreignKey:channel_id; onUpdate:CASCADE; onDelete:CASCADE"`
 	Users       []UserModel `gorm:"many2many:user_roles; onUpdate:CASCADE; onDelete:CASCADE"`
-	Weight      int         `gorm:"integer;autoIncrement;"`
+	Weight      int         `gorm:"integer;"`
 	Permission  int64       `gorm:"type:bigint"`
 	Name        string      `gorm:"type:varchar(255);"`
 	Description string      `gorm:"type:varchar(255);"`
@@ -25,21 +27,36 @@ func CreateDefaultRole(channId int) *Role {
 		Description: DefaultRoleDescription,
 	}
 
-	return role.Create()
+	role.Create()
+
+	return role
 }
 
 func (r *Role) TableName() string {
 	return "roles"
 }
 
-func (r *Role) Create() *Role {
-	tx := Db.Create(r)
-
-	if tx.RowsAffected == 0 {
-		return nil
+func GetHighestRoleWeight() (int, error) {
+	var maxWeight int
+	err := Db.Model(&Role{}).Select("MAX(weight)").Row().Scan(&maxWeight)
+	if err != nil {
+		return 0, err
 	}
+	return maxWeight, nil
+}
 
-	return r
+func (r *Role) Create() (*Role, error) {
+
+	highestWeight, err := GetHighestRoleWeight()
+	if err != nil {
+		return nil, err
+	}
+	r.Weight = highestWeight + 1
+	tx := Db.Create(r)
+	if tx.RowsAffected == 0 {
+		return nil, errors.New("failed to create role")
+	}
+	return r, nil
 }
 
 func (c *Channel) GetRoles() ([]Role, error) {
