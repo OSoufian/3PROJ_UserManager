@@ -5,7 +5,7 @@ type Role struct {
 	ChannelId   int
 	Channel     Channel     `gorm:"foreignKey:channel_id; onUpdate:CASCADE; onDelete:CASCADE"`
 	Users       []UserModel `gorm:"many2many:user_roles; onUpdate:CASCADE; onDelete:CASCADE"`
-	Weight      int         `gorm:"integer"`
+	Weight      int         `gorm:"integer;autoIncrement;"`
 	Permission  int64       `gorm:"type:bigint"`
 	Name        string      `gorm:"type:varchar(255);"`
 	Description string      `gorm:"type:varchar(255);"`
