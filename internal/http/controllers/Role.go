@@ -126,7 +126,13 @@ func createRole(c *fiber.Ctx) error {
 func patchRole(c *fiber.Ctx) error {
 	role := utils.GetRolesBody(c)
 
-	return c.Status(200).JSON(role.Update())
+	if _, err := role.Update(); err != nil {
+		return c.Status(fiber.ErrBadGateway.Code).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	return c.Status(200).JSON(role)
 
 }
 

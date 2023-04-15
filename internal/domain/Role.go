@@ -72,13 +72,63 @@ func (r *Role) Get() (*Role, error) {
 	return r, nil
 }
 
-func (r *Role) Update() *Role {
-	tx := Db.Where("id = ?", r.Id).Updates(r)
-	if tx.RowsAffected == 0 {
-		return nil
+func (r *Role) Update() (*Role, error) {
+	var role *Role
+	err := Db.Where("id = ?", r.Id).First(role).Error
+
+	if err != nil {
+		return nil, err
 	}
 
-	return r
+	if r.Weight == role.Weight {
+		err := Db.Where("id = ?", r.Id).Updates(r).Error
+
+		if err != nil {
+			return nil, err
+		}
+
+		return r, nil
+	}
+
+	// Begin a transaction to ensure consistency
+	tx := Db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	// Get all roles with a weight greater than or equal to the new weight
+	var roles []Role
+	if err := tx.Where("weight >= ?", r.Weight).Order("weight asc").Find(&roles).Error; err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	if err := tx.Save(r).Error; err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	// Adjust the weights of the other roles
+	for _, role := range roles {
+		if role.Id != r.Id {
+
+			role.Weight++
+			if err := tx.Save(&role).Error; err != nil {
+				tx.Rollback()
+				return nil, err
+			}
+		}
+	}
+
+	// Commit the transaction
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	return r, nil
 }
 
 func (r *Role) Delete() *Role {
