@@ -109,7 +109,7 @@ func (channel *Channel) Create() *Channel {
 }
 
 func (channel *Channel) Update() *Channel {
-	tx := Db.Save(&channel)
+	tx := Db.Where("id = ?", channel.Id).Updates(&channel)
 	if tx.RowsAffected == 0 {
 		return nil
 	}

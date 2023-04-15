@@ -11,7 +11,6 @@ import (
 	"github.com/duo-labs/webauthn/webauthn"
 )
 
-
 type UserModel struct {
 	Id            uint      `gorm:"primarykey;autoIncrement;not null"`
 	Icon          string    `gorm:"type:varchar(255);"`
@@ -96,7 +95,7 @@ func (user *UserModel) Delete() {
 }
 
 func (user *UserModel) Update() {
-	Db.Save(&user)
+	Db.Where("id = ?", user.Id).Updates(&user)
 }
 
 /* func randomint64() int64 {

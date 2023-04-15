@@ -73,7 +73,7 @@ func (r *Role) Get() (*Role, error) {
 }
 
 func (r *Role) Update() *Role {
-	tx := Db.Save(&r)
+	tx := Db.Where("id = ?", r.Id).Updates(r)
 	if tx.RowsAffected == 0 {
 		return nil
 	}
