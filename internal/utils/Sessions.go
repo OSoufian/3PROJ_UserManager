@@ -7,13 +7,50 @@ package utils
 import (
 	"strings"
 	"webauthn_api/internal/domain"
+	"time"
+	"log"
 
 	"github.com/gofiber/fiber/v2"
+
+	"github.com/duo-labs/webauthn/webauthn"
 )
 
-var Sessions map[string]*domain.UserSessions
 
-func CheckAuthn(c *fiber.Ctx) *domain.UserSessions {
+type UserSessions struct {
+	SessionData *webauthn.SessionData `json:"-"`
+	SessionCred *webauthn.Credential  `json:"-"`
+	DisplayName string
+	Jwt         string
+	Expiration  int64 `json:"-"`
+}
+
+var Sessions map[string]*UserSessions
+
+func (session UserSessions) DeleteAfter() {
+
+	if session.Expiration > 0 {
+		time.Sleep(time.Second)
+		session.Expiration -= 1
+		session.DeleteAfter()
+		return
+	}
+
+	log.Printf("user delete")
+
+	user := domain.UserModel{}
+
+	user.Username = session.DisplayName
+
+	userModel := user.Get()
+
+	if user.Password == "" && user.Incredentials == "" {
+		userModel.Delete()
+	}
+
+	delete(Sessions, session.DisplayName)
+}
+
+func CheckAuthn(c *fiber.Ctx) *UserSessions {
 	value, ok := c.GetReqHeaders()["Authorization"]
 	if !ok {
 		return nil

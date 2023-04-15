@@ -23,7 +23,7 @@ var err error
 
 func main() {
 
-	utils.Sessions = make(map[string]*domain.UserSessions)
+	utils.Sessions = make(map[string]*utils.UserSessions)
 
 	/* env vars */
 	if _, err := os.Stat(".env"); err == nil {
@@ -41,7 +41,7 @@ func main() {
 	RPIcon := os.Getenv("RPIcon")
 	appListen := os.Getenv("AppListen")
 
-	utils.Sessions = make(map[string]*domain.UserSessions)
+	utils.Sessions = make(map[string]*utils.UserSessions)
 
 	// db Initialisaiton
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s", postgresHost, postgresUser, postgresPassword, postgresDatabase, postgresPort)

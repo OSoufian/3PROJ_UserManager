@@ -61,7 +61,7 @@ func registrationStart(c *fiber.Ctx) error {
 		return c.SendStatus(401)
 	}
 
-	session := new(domain.UserSessions)
+	session := new(utils.UserSessions)
 	session.DisplayName = user.Username
 	session.SessionData = sessionData
 	session.Expiration = 3600
@@ -69,7 +69,7 @@ func registrationStart(c *fiber.Ctx) error {
 	sessions[user.Username] = session
 	utils.Sessions = sessions
 
-	go session.DeleteAfter(utils.Sessions)
+	go session.DeleteAfter()
 
 	return c.JSON(fiber.Map{
 		"Options": options,
@@ -139,7 +139,7 @@ func registerEnd(c *fiber.Ctx) error {
 	session.Jwt = token
 	utils.Sessions[user.Username] = session
 
-	go session.DeleteAfter(utils.Sessions)
+	go session.DeleteAfter()
 
 	return c.JSON(fiber.Map{
 		"token": session.Jwt,
@@ -175,7 +175,7 @@ func registerPassword(c *fiber.Ctx) error {
 		})
 	}
 
-	session := new(domain.UserSessions)
+	session := new(utils.UserSessions)
 
 	session.DisplayName = user.Username
 	session.Expiration = 24 * 3600 * 2
@@ -189,7 +189,7 @@ func registerPassword(c *fiber.Ctx) error {
 
 	session.Jwt = token
 	utils.Sessions[user.Username] = session
-	go session.DeleteAfter(utils.Sessions)
+	go session.DeleteAfter()
 
 	user.Create()
 

@@ -42,12 +42,12 @@ func loginStart(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(err)
 	}
-	session := new(domain.UserSessions)
+	session := new(utils.UserSessions)
 
 	session.SessionData = sessionData
 	session.DisplayName = user.Username
 	session.Expiration = 60 * 1000
-	go session.DeleteAfter(utils.Sessions)
+	go session.DeleteAfter()
 	utils.Sessions[user.Username] = session
 
 	return c.JSON(options)
@@ -108,7 +108,7 @@ func loginEnd(c *fiber.Ctx) error {
 	utils.Sessions[user.Username] = session
 
 	
-	go session.DeleteAfter(utils.Sessions)
+	go session.DeleteAfter()
 
 	user.Credentials = append(user.Credentials, *creds)
 
@@ -150,7 +150,7 @@ func loginPassword(c *fiber.Ctx) error {
 		})
 	}
 
-	session := new(domain.UserSessions)
+	session := new(utils.UserSessions)
 
 	session.DisplayName = user.Username
 	token, err := utils.CreateJWT(*session)
@@ -164,7 +164,7 @@ func loginPassword(c *fiber.Ctx) error {
 	session.Expiration = 24 * 3600 * 2
 	utils.Sessions[user.Username] = session
 	
-	go session.DeleteAfter(utils.Sessions)
+	go session.DeleteAfter()
 
 
 	return c.JSON(fiber.Map{

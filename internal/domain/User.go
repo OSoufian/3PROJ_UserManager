@@ -11,37 +11,6 @@ import (
 	"github.com/duo-labs/webauthn/webauthn"
 )
 
-type UserSessions struct {
-	SessionData *webauthn.SessionData `json:"-"`
-	SessionCred *webauthn.Credential  `json:"-"`
-	DisplayName string
-	Jwt         string
-	Expiration  int64 `json:"-"`
-}
-
-func (session UserSessions) DeleteAfter(sessions map[string]*UserSessions) {
-
-	if session.Expiration > 0 {
-		time.Sleep(time.Second)
-		session.Expiration -= 1
-		session.DeleteAfter(sessions)
-		return
-	}
-
-	log.Printf("user delete")
-
-	user := UserModel{}
-
-	user.Username = session.DisplayName
-
-	userModel := user.Get()
-
-	if user.Password == "" && user.Incredentials == "" {
-		userModel.Delete()
-	}
-
-	delete(sessions, session.DisplayName)
-}
 
 type UserModel struct {
 	Id            uint      `gorm:"primarykey;autoIncrement;not null"`

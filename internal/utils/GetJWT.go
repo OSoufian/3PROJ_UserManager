@@ -5,8 +5,6 @@ import (
 
 	"math/rand"
 
-	"webauthn_api/internal/domain"
-
 	"github.com/google/uuid"
 
 	"github.com/golang-jwt/jwt"
@@ -24,7 +22,7 @@ func generateKey(n int) string {
 	return string(b)
 }
 
-func CreateJWT(session domain.UserSessions) (string, error) {
+func CreateJWT(session UserSessions) (string, error) {
 	var authToken string
 	if session.SessionData == nil {
 		authToken = uuid.NewString()
@@ -46,7 +44,7 @@ func CreateJWT(session domain.UserSessions) (string, error) {
 	return tokenString, nil
 }
 
-func CheckJWT(session *domain.UserSessions, tokenString string) bool {
+func CheckJWT(session *UserSessions, tokenString string) bool {
 	claims := jwt.MapClaims{}
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
 		return sampleSecretKey, nil
