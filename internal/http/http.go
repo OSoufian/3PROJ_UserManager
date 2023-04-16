@@ -49,7 +49,7 @@ func Http() *fiber.App {
 	// app.Use(middlewares.CSRF())
 	// app.Use(middlewares.EncryptCookie())
 
-	app.Use(middlewares.Permissions)
+	// app.Use(middlewares.Permissions)
 
 	// app.Get("/checkUser/:username", CheckUserName)
 	app.Get("/", healthCheck)

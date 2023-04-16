@@ -23,7 +23,7 @@ func ChannelBootstrap(app fiber.Router) {
 // @Tags Channels
 // @Success 200 {Channels} domain.Channel
 // @Failure 404
-// @Router /channels/:channId [get]
+// @Router /channel/:channId [get]
 func getChannel(c *fiber.Ctx) error {
 	channel, err := utils.GetChannel(c)
 
@@ -41,7 +41,7 @@ func getChannel(c *fiber.Ctx) error {
 // @Tags Videos
 // @Success 200 {Videos} domain.Videos
 // @Failure 404
-// @Router /channels/:channId/video [get]
+// @Router /channel/:channId/video [get]
 func getVideos(c *fiber.Ctx) error {
 	channel, err := utils.GetChannel(c)
 
@@ -59,14 +59,13 @@ func getVideos(c *fiber.Ctx) error {
 // @Tags Channels
 // @Success 200 {Channels} domain.Channel
 // @Failure 404
-// @Router /channels/:channId [put]
+// @Router /channel/:channId [put]
 func createChannel(c *fiber.Ctx) error {
 	channel := utils.ParseChannel(c)
 	session := utils.CheckAuthn(c)
 	user := domain.UserModel{}
 	user.Username = session.DisplayName
 	channel.OwnerId = user.Get().Id
-
 	channel, err := channel.GetByOwner()
 	if user.Get() == nil || err == nil {
 		return c.SendStatus(fiber.StatusForbidden)
@@ -81,7 +80,7 @@ func createChannel(c *fiber.Ctx) error {
 // @Tags Channels
 // @Success 200 {Channels} domain.Channel
 // @Failure 404
-// @Router /channels/:channId [patch]
+// @Router /channel/:channId [patch]
 func patchChannel(c *fiber.Ctx) error {
 	channel := utils.ParseChannel(c)
 	channel.Update()
@@ -94,7 +93,7 @@ func patchChannel(c *fiber.Ctx) error {
 // @Tags Channels
 // @Success 200 {Channels} domain.Channel
 // @Failure 404
-// @Router /channels/:channId [delete]
+// @Router /channel/:channId [delete]
 func deleteChannel(c *fiber.Ctx) error {
 
 	channel, err := utils.GetChannel(c)
