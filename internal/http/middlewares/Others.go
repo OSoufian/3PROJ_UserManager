@@ -1,8 +1,10 @@
 package middlewares
 
 import (
+	"log"
 	"os"
 	"strings"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/proxy"
 )
@@ -18,13 +20,10 @@ func OthersApi(router fiber.Router) {
 
 			c.Request().Header.Add("X-Real-IP", c.IP())
 			err := proxy.Do(c, server+c.OriginalURL())
-			if c.Response().StatusCode() != 404 {
-				
-				return err 
-			}
 
+			log.Println(err)
 		}
-		return c.SendStatus(404)
+		return c.Next()
 	})
 
 }
