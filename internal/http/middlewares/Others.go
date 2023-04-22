@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"log"
 	"os"
 	"strings"
 
@@ -20,10 +19,13 @@ func OthersApi(router fiber.Router) {
 
 			c.Request().Header.Add("X-Real-IP", c.IP())
 			err := proxy.Do(c, server+c.OriginalURL())
+			if c.Response().StatusCode() != 404 {
 
-			log.Println(err)
+				return err
+			}
+
 		}
-		return c.Next()
+		return c.SendStatus(404)
 	})
 
 }
