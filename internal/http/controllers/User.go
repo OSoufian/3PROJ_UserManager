@@ -254,6 +254,9 @@ func deleteUser(c *fiber.Ctx) error {
 func deleteCred(c *fiber.Ctx) error {
 	user := new(domain.UserModel)
 	userSession := utils.CheckAuthn(c)
+	if userSession == nil {
+		return c.SendStatus(fiber.StatusBadRequest)
+	}
 	user.Username = userSession.DisplayName
 	user = user.Get()
 	if user == nil {

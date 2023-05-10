@@ -27,7 +27,7 @@ func CheckPerms(c *fiber.Ctx, bins int64) error {
 	perm = 0
 
 	if session == nil {
-		perm |= 0
+		perm |= 256
 
 	} else {
 		user := domain.UserModel{}
@@ -64,13 +64,13 @@ func CheckPerms(c *fiber.Ctx, bins int64) error {
 			}
 		}
 
-		if strings.Contains(path, "channel") || c.Query("channId") != "" {
+		if strings.Contains(path, "channId") || c.Query("channId") != "" {
 			var (
 				channId int64
 				err     error
 			)
 
-			if strings.Contains(path, "channel") && len(route) > 1 {
+			if strings.Contains(path, "channId") && len(route) > 1 {
 				channId, err = strconv.ParseInt(route[len(route)-1], 10, 64)
 			} else if c.Query("channId") != "" {
 				channId, err = strconv.ParseInt(c.Query("channId"), 10, 64)
@@ -114,7 +114,11 @@ func CheckPerms(c *fiber.Ctx, bins int64) error {
 	if perm != 0 {
 		return c.Next()
 	} else {
-		log.Println(session.DisplayName, "is unauthorized to make >", c.Method(), "on this route >", string(c.Request().URI().Path()))
+		if session == nil {
+			log.Println("session does not exist")
+		} else {
+				log.Println(session.DisplayName, "is unauthorized to make >", c.Method(), "on this route >", string(c.Request().URI().Path()))
+		}
 		return c.Status(fiber.StatusUnauthorized).SendString("Not enought Permissions")
 	}
 }
