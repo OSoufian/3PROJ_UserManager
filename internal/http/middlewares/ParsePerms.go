@@ -27,7 +27,7 @@ func CheckPerms(c *fiber.Ctx, bins int64) error {
 	perm = 0
 
 	if session == nil {
-		perm |= 256
+		perm |= 69905
 
 	} else {
 		user := domain.UserModel{}
