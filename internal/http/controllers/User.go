@@ -14,6 +14,8 @@ func UserBootstrap(app fiber.Router) {
 
 	app.Get("/", about)
 
+	app.Get("/admin/all", getAllUsers)
+
 	app.Get("/channel", getUserChannel)
 
 	app.Get("/channel/:username", getChannelByUser)
@@ -64,6 +66,23 @@ func getChannelByUser(c *fiber.Ctx) error {
 	channel.OwnerId = user.Id
 	channel.GetByOwner()
 	return c.Status(200).JSON(channel)
+}
+
+// Get All users
+// @Summary Users
+// @Description get all user
+// @Tags Users
+// @Success 200 {Users} List Users
+// @Failure 404
+// @Router /all [get]
+func getAllUsers(c *fiber.Ctx) error {
+
+	UsersModels := domain.UserModel{}
+	users, err := UsersModels.GetAll()
+	if err != nil {
+		return c.SendStatus(fiber.ErrBadRequest.Code)
+	}
+	return c.Status(200).JSON(users)
 }
 
 // Get Channel

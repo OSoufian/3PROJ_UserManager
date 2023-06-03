@@ -98,6 +98,15 @@ func (user *UserModel) Update() {
 	Db.Where("id = ?", user.Id).Updates(&user)
 }
 
+func (video *UserModel) GetAll() ([]UserModel, error) {
+	var results []UserModel
+	err := Db.Find(&results).Error
+	if err != nil {
+		return nil, err
+	}
+	return results, nil
+}
+
 /* func randomint64() int64 {
 	buf := make([]byte, 8)
 	rand.Read(buf)

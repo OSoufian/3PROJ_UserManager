@@ -13,6 +13,7 @@ func OthersApi(router fiber.Router) {
 
 	router.Use(func(c *fiber.Ctx) error {
 		for _, server := range strings.Split(os.Getenv("Others"), ";") {
+			// if !strings.HasPrefix(server, "http") || !strings.HasPrefix(server, "ws") { -> Marche pas.
 			if !strings.HasPrefix(server, "http") {
 				server = "http://" + server
 			}
