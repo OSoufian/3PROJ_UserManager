@@ -9,13 +9,13 @@ import (
 )
 
 type PartialChannel struct {
-	Id          int
-	OwnerId     int
-	Name        string
-	Description string
-	SocialLink  string
-	Banner      string
-	Icon        string
+	Id          int	   `json:"Id"`
+	OwnerId     int    `json:"OwnerId"`
+	Description string `json:"Description"`
+	Name        string `json:"Name"`
+	Banner      string `json:"Banner"`
+	Icon        string `json:"Icon"`
+	SocialLink  string `json:"SocialLink"`
 }
 
 func (p *PartialChannel) Unmarshal(body []byte) error {

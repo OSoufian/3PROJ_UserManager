@@ -82,8 +82,41 @@ func createChannel(c *fiber.Ctx) error {
 // @Failure 404
 // @Router /channel/:channId [patch]
 func patchChannel(c *fiber.Ctx) error {
-	channel := utils.ParseChannel(c)
+	session := utils.CheckAuthn(c)
+	
+	user := domain.UserModel{}
+	user.Username = session.DisplayName
+	user.Get()
+
+	partial := new(utils.PartialChannel)
+	if err := partial.Unmarshal(c.Body()); err != nil {
+		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
+			"err": err.Error(),
+		})
+	}
+
+	channel := domain.Channel{}
+	channel.Id = uint(partial.Id)
+	channel.Get()
+
+	if partial.Description != "" {
+		channel.Description = partial.Description
+	}
+	if partial.Name != "" {
+		channel.Name = partial.Name
+	}
+	if partial.Banner != "" {
+		channel.Banner = partial.Banner
+	}
+	if partial.Icon != "" {
+		channel.Icon = partial.Icon
+	}
+	if partial.SocialLink != "" {
+		channel.SocialLink = partial.SocialLink
+	}
+
 	channel.Update()
+
 	return c.Status(fiber.StatusAccepted).JSON(channel)
 }
 
