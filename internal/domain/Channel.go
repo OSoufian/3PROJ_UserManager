@@ -18,15 +18,19 @@ type UserChannelPermission struct {
 }
 
 type Videos struct {
-	Id          uint   `gorm:"primarykey;autoIncrement;not null"`
-	Name        string `gorm:"type:varchar(255);"`
-	Description string `gorm:"type:varchar(255);"`
-	Icon        string `gorm:"type:varchar(255);"`
-	VideoURL    string `gorm:"type:varchar(255);"`
-	Views       int    `gorm:"type:integer default:0"`
-	channId     uint   `gorm:"foreignKey:id"`
-	CreatedAt   string `gorm:"type:time without time zone"`
-	IsBlock     bool   `gorm:"type:boolean;default:false"`
+	Id            uint   `gorm:"primarykey;autoIncrement;not null"`
+	Name          string `gorm:"type:varchar(255);"`
+	Description   string `gorm:"type:varchar(1500);"`
+	Icon          string `gorm:"type:varchar(255);"`
+	VideoURL      string `gorm:"type:varchar(255);"`
+	Views         int    `gorm:"type:integer"`
+	Size          int64  `gorm:"type:integer"`
+	ChannelId     uint   `gorm:"foreignKey:id"`
+	Channel       Channel
+	CreatedAt     string `gorm:"type:time with time zone"`
+	CreationDate  string `gorm:"type:time with time zone"`
+	IsBlock       bool   `gorm:"type:boolean;default:false"`
+	IsHide        bool   `gorm:"type:boolean;default:false"`
 }
 
 func (video Videos) TableName() string {

@@ -8,7 +8,8 @@ import (
 )
 
 type PartialUser struct {
-	Icon     string `json:"icon"`
+	Username string `json:"Username"`
+	Icon     string `json:"Icon"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }

@@ -7,12 +7,15 @@ import (
 	"webauthn_api/internal/domain"
 	"webauthn_api/internal/utils"
 
+	"log"
 	"github.com/gofiber/fiber/v2"
 )
 
 func UserBootstrap(app fiber.Router) {
 
 	app.Get("/", about)
+
+	app.Get("/:UserId", getUserById)
 
 	app.Get("/admin/all", getAllUsers)
 
@@ -49,6 +52,31 @@ func about(c *fiber.Ctx) error {
 	}
 	user.Username = userSession.DisplayName
 	return c.Status(200).JSON(user.Get())
+}
+
+// Get User
+// @Summary Get about me
+// @Description get all information about me
+// @Tags Users
+// @Success 200 {UserModel} domain.UserModel
+// @Failure 404
+// @Router /user [get]
+func getUserById(c *fiber.Ctx) error {
+	
+	userSession := utils.CheckAuthn(c)
+	if userSession == nil {
+		return c.SendStatus(fiber.StatusUnauthorized)
+	}
+
+	id := c.Params("UserId")
+	UserId, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return c.Status(fiber.ErrBadRequest.Code).JSON(err)
+	}
+	user := new(domain.UserModel)
+
+	user.Id = uint(UserId)
+	return c.Status(fiber.StatusAccepted).JSON(user.GetById())
 }
 
 // Get Channel by username
@@ -219,25 +247,37 @@ func editRole(c *fiber.Ctx) error {
 // @Failure 404 nil object
 // @Router /user [patch]
 func editUser(c *fiber.Ctx) error {
+	session := utils.CheckAuthn(c)
+	
+	user := domain.UserModel{}
+	user.Username = session.DisplayName
+	user.Get()
 
-	userSession := utils.CheckAuthn(c)
-
-	userIn := new(domain.UserModel)
-	userIn.Username = userSession.DisplayName
-	userIn = userIn.Get()
-
-	user := new(utils.PartialUser)
-	err := user.Unmarshal(c.Body())
-	if err != nil {
+	partial := new(utils.PartialUser)
+	if err := partial.Unmarshal(c.Body()); err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
 			"err": err.Error(),
 		})
 	}
+	log.Println(user)
 
-	userIn.Email = user.Email
-	userIn.Password = user.Password
+	newUser := domain.UserModel{}
+	newUser.Username = partial.Username
+	newUser.Get()
 
-	userIn.Update()
+	if partial.Icon != "" {
+		newUser.Icon = partial.Icon
+	}
+
+	log.Println(newUser)
+
+	newUser.Email = user.Email
+	newUser.Password = user.Password
+	newUser.Icon = user.Icon
+	log.Println(newUser)
+	log.Println(user)
+
+	newUser.Update()
 
 	return c.Status(200).JSON(user)
 

@@ -12,18 +12,18 @@ import (
 )
 
 type UserModel struct {
-	Id            uint      `gorm:"primarykey;autoIncrement;not null"`
-	Icon          string    `gorm:"type:varchar(255);"`
-	Username      string    `gorm:"type:varchar(255);not null"`
-	Email         string    `gorm:"type:varchar(255);"`
-	Password      string    `gorm:"type:varchar(255);"`
-	Permission    int64     `gorm:"type:bigint;default:4607"`
-	Incredentials string    `gorm:"column:credentials type:text"`
-	ValideAccount bool      `gorm:"type:bool; default false"`
-	Disable       bool      `gorm:"type:bool; default false"`
-	Subscribtion  []Channel `gorm:"many2many:channel_subscription;  onUpdate:CASCADE; onDelete:CASCADE"`
-	Roles         []Role    `gorm:"many2many:user_roles; onUpdate:CASCADE; onDelete:CASCADE"`
-	webauthn.User `gorm:"-" json:"-"`
+	Id            uint      			`gorm:"primarykey;autoIncrement;not null"`
+	Icon          string    			`gorm:"type:varchar(255);"`
+	Username      string    			`gorm:"type:varchar(255);not null"`
+	Email         string    			`gorm:"type:varchar(255);"`
+	Password      string    			`gorm:"type:varchar(255);"`
+	Permission    int64     			`gorm:"type:bigint;default:4607"`
+	Incredentials string    			`gorm:"column:credentials type:text"`
+	ValideAccount bool      			`gorm:"type:bool; default false"`
+	Disable       bool      			`gorm:"type:bool; default false"`
+	Subscribtion  []Channel 			`gorm:"many2many:channel_subscription;  onUpdate:CASCADE; onDelete:CASCADE"`
+	Roles         []Role    			`gorm:"many2many:user_roles; onUpdate:CASCADE; onDelete:CASCADE"`
+	webauthn.User 						`gorm:"-" json:"-"`
 	Credentials   []webauthn.Credential `gorm:"-"`
 	CreatedAt     time.Time             `gorm:"default:CURRENT_TIMESTAMP"`
 }
@@ -81,6 +81,7 @@ func (user *UserModel) Find() bool {
 	tx := Db.Where("username = ?", user.Username).Find(user)
 	return tx.RowsAffected != 0
 }
+
 func (user *UserModel) Get() *UserModel {
 
 	tx := Db.Where("username = ?", user.Username).Find(user)
@@ -90,12 +91,28 @@ func (user *UserModel) Get() *UserModel {
 	return user
 
 }
+
+func (user *UserModel) GetById() *UserModel {
+
+	tx := Db.Where("id = ?", user.Id).Find(user)
+	if tx.RowsAffected == 0 {
+		return nil
+	}
+	return user
+
+}
+
 func (user *UserModel) Delete() {
 	Db.Delete(user)
 }
 
-func (user *UserModel) Update() {
-	Db.Where("id = ?", user.Id).Updates(&user)
+func (user *UserModel) Update() *UserModel {
+	tx := Db.Where("id = ?", user.Id).Updates(&user)
+	if tx.RowsAffected == 0 {
+		return nil
+	}
+
+	return user
 }
 
 func (video *UserModel) GetAll() ([]UserModel, error) {
