@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"strconv"
 	"webauthn_api/internal/domain"
+	"log"
 
 	"github.com/gofiber/fiber/v2"
 )

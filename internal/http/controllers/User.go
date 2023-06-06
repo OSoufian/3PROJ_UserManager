@@ -15,7 +15,7 @@ func UserBootstrap(app fiber.Router) {
 
 	app.Get("/", about)
 
-	app.Get("/:UserId", getUserById)
+	app.Get("/chat/:UserId", getUserById)
 
 	app.Get("/admin/all", getAllUsers)
 
