@@ -51,14 +51,24 @@ func (channel *Channel) Get() *Channel {
 	return channel
 }
 
-func (channel *Channel) GetAllVideos() []Videos {
-	var video []Videos
-	Db.Joins("video_info vo ON vo.channel_id = channels.id").
-		Where("channels.id = ?", channel.Id).
-		Find(video)
+// func (channel *Channel) DeleteAllVideos() error {
+// 	// Retrieve all videos of the channel
+// 	var videos []Videos
+// 	if err := Db.Where("SELECT video_info ON video_info.channel_id = channels.id").
+// 		Where("channels.id = ?", channel.Id).
+// 		Find(&videos).Error; err != nil {
+// 		return err
+// 	}
 
-	return video
-}
+// 	// Delete each video
+// 	for _, video := range videos {
+// 		if err := Db.Delete(&video).Error; err != nil {
+// 			return err
+// 		}
+// 	}
+
+// 	return nil
+// }
 
 func (channel *Channel) GetByOwner() (*Channel, error) {
 	err := Db.Where("owner_id = ?", channel.OwnerId).First(channel).Error

@@ -10,7 +10,6 @@ import (
 func ChannelBootstrap(app fiber.Router) {
 
 	app.Get("/:channId", getChannel)
-	app.Get("/:channId/video", getVideos)
 	app.Put("/", createChannel)
 	app.Patch("/:channId", patchChannel)
 	app.Delete("/:channId", deleteChannel)
@@ -32,24 +31,6 @@ func getChannel(c *fiber.Ctx) error {
 	}
 
 	return c.Status(200).JSON(channel)
-
-}
-
-// Get Video
-// @Summary Get all video
-// @Description get all video of the user
-// @Tags Videos
-// @Success 200 {Videos} domain.Videos
-// @Failure 404
-// @Router /channel/:channId/video [get]
-func getVideos(c *fiber.Ctx) error {
-	channel, err := utils.GetChannel(c)
-
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(err.Error())
-	}
-
-	return c.Status(200).JSON(channel.GetAllVideos())
 
 }
 
@@ -133,6 +114,8 @@ func deleteChannel(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(err.Error())
 	}
+
+	// channel.DeleteAllVideos()
 
 	return c.Status(fiber.StatusAccepted).JSON(channel.Delete())
 }

@@ -7,7 +7,6 @@ import (
 	"webauthn_api/internal/domain"
 	"webauthn_api/internal/utils"
 
-	"log"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -32,6 +31,7 @@ func UserBootstrap(app fiber.Router) {
 	app.Patch("/", editUser)
 
 	app.Delete("/", deleteUser)
+	app.Delete("/:userId", deleteUserById)
 
 	app.Delete("/cred", deleteCred)
 
@@ -254,23 +254,17 @@ func editUser(c *fiber.Ctx) error {
 			"err": err.Error(),
 		})
 	}
-	log.Println(user)
 
-	// newUser := domain.UserModel{}
 	user.Username = partial.Username
-	// newUser.Get()
 
 	if partial.Icon != "" {
 		user.Icon = partial.Icon
 	}
 
-	// log.Println(newUser)
 
 	user.Email = partial.Email
 	user.Password = partial.Password
 	user.Icon = partial.Icon
-	// log.Println(user)
-	log.Println(user)
 
 	user.Update()
 
@@ -289,8 +283,36 @@ func deleteUser(c *fiber.Ctx) error {
 	user := new(domain.UserModel)
 	userSession := utils.CheckAuthn(c)
 	user.Username = userSession.DisplayName
+	user.Get()
 
 	user.Delete()
+	delete(utils.Sessions, user.Username)
+
+	return c.JSON(fiber.Map{
+		"message": "deleted",
+	})
+}
+
+// Delete me
+// @Summary  delete account
+// @Tags Users
+// @Description delete user account
+// @Success 200 {array} domain.UserModel
+// @Failure 404 nil object
+// @Router /user [delete]
+func deleteUserById(c *fiber.Ctx) error {
+	userId, er := strconv.ParseInt(c.Params("userId"), 10, 64)
+
+	if er != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(er.Error())
+	}
+
+	user := new(domain.UserModel)
+	user.Id = uint(userId)
+	user.Get()
+
+	user.Delete()
+
 	delete(utils.Sessions, user.Username)
 
 	return c.JSON(fiber.Map{
