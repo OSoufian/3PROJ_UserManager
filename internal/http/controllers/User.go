@@ -62,11 +62,6 @@ func about(c *fiber.Ctx) error {
 // @Failure 404
 // @Router /user [get]
 func getUserById(c *fiber.Ctx) error {
-	
-	userSession := utils.CheckAuthn(c)
-	if userSession == nil {
-		return c.SendStatus(fiber.StatusUnauthorized)
-	}
 
 	id := c.Params("UserId")
 	UserId, err := strconv.ParseInt(id, 10, 64)
@@ -261,23 +256,23 @@ func editUser(c *fiber.Ctx) error {
 	}
 	log.Println(user)
 
-	newUser := domain.UserModel{}
-	newUser.Username = partial.Username
-	newUser.Get()
+	// newUser := domain.UserModel{}
+	user.Username = partial.Username
+	// newUser.Get()
 
 	if partial.Icon != "" {
-		newUser.Icon = partial.Icon
+		user.Icon = partial.Icon
 	}
 
-	log.Println(newUser)
+	// log.Println(newUser)
 
-	newUser.Email = user.Email
-	newUser.Password = user.Password
-	newUser.Icon = user.Icon
-	log.Println(newUser)
+	user.Email = partial.Email
+	user.Password = partial.Password
+	user.Icon = partial.Icon
+	// log.Println(user)
 	log.Println(user)
 
-	newUser.Update()
+	user.Update()
 
 	return c.Status(200).JSON(user)
 

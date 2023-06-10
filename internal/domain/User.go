@@ -28,6 +28,11 @@ type UserModel struct {
 	CreatedAt     time.Time             `gorm:"default:CURRENT_TIMESTAMP"`
 }
 
+type UserResponse struct {
+	Username string `json:"Username"`
+	Icon     string `json:"Icon"`
+}
+
 func (user *UserModel) TableName() string {
 	return "users"
 }
@@ -92,13 +97,16 @@ func (user *UserModel) Get() *UserModel {
 
 }
 
-func (user *UserModel) GetById() *UserModel {
+func (user *UserModel) GetById() *UserResponse {
 
 	tx := Db.Where("id = ?", user.Id).Find(user)
 	if tx.RowsAffected == 0 {
 		return nil
 	}
-	return user
+	return &UserResponse{
+		Username: user.Username,
+		Icon:     user.Icon,
+	}
 
 }
 
