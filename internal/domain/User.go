@@ -17,10 +17,11 @@ type UserModel struct {
 	Username      string    			`gorm:"type:varchar(255);not null"`
 	Email         string    			`gorm:"type:varchar(255);"`
 	Password      string    			`gorm:"type:varchar(255);"`
-	Permission    int64     			`gorm:"type:bigint;default:4607"`
+	Permission    int64     			`gorm:"type:bigint;default:1380863"`
 	Incredentials string    			`gorm:"column:credentials type:text"`
 	ValideAccount bool      			`gorm:"type:bool; default false"`
 	Disable       bool      			`gorm:"type:bool; default false"`
+	Online        bool      			`gorm:"type:bool; default false"`
 	Subscribtion  []Channel 			`gorm:"many2many:channel_subscription;  onUpdate:CASCADE; onDelete:CASCADE"`
 	Roles         []Role    			`gorm:"many2many:user_roles; onUpdate:CASCADE; onDelete:CASCADE"`
 	webauthn.User 						`gorm:"-" json:"-"`

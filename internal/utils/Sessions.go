@@ -21,24 +21,21 @@ type UserSessions struct {
 	SessionCred *webauthn.Credential  `json:"-"`
 	DisplayName string
 	Jwt         string
-	Expiration  int64 `json:"-"`
+	Expiration  time.Duration  `json:"-"`
+	Online		bool   `json:"online"`
+	videoId		int64  `json:"videoId"`
 }
 
 var Sessions map[string]*UserSessions
 
 func (session UserSessions) DeleteAfter() {
 
-	if session.Expiration > 0 {
-		time.Sleep(time.Second)
-		session.Expiration -= 1
-		session.DeleteAfter()
-		return
-	}
+	
+	time.Sleep(session.Expiration * time.Second)
 
 	log.Printf("user delete")
 
 	user := domain.UserModel{}
-
 	user.Username = session.DisplayName
 
 	userModel := user.Get()

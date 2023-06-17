@@ -64,10 +64,13 @@ func registrationStart(c *fiber.Ctx) error {
 	session := new(utils.UserSessions)
 	session.DisplayName = user.Username
 	session.SessionData = sessionData
-	session.Expiration = 3600
+	
+	session.Expiration = 1800 // delete after
 
-	sessions[user.Username] = session
+
+	sessions[session.DisplayName] = session
 	utils.Sessions = sessions
+	log.Println(utils.Sessions)
 
 	go session.DeleteAfter()
 
@@ -126,8 +129,11 @@ func registerEnd(c *fiber.Ctx) error {
 
 	user.SaveCredentials()
 
+	// user.Online = true
+	// user.Update()
+
 	session.SessionCred = creds
-	session.Expiration = 24 * 3600 * 2 * 1000
+	session.Expiration = 24 * 3600 * 2
 
 	token, err := utils.CreateJWT(*session)
 	if err != nil {

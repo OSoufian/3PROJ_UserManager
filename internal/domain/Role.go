@@ -16,7 +16,7 @@ type Role struct {
 const (
 	DefaultRoleName        = "everyone"
 	DefaultRoleDescription = "default permissions"
-	DefaultRolePermissions = 4607
+	DefaultRolePermissions = 1380863
 )
 
 func CreateDefaultRole(channId int) *Role {

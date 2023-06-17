@@ -4,7 +4,6 @@ import (
 	"strings"
 	"webauthn_api/internal/domain"
 
-	// "log"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -12,13 +11,11 @@ func Permissions(c *fiber.Ctx) error {
 	path := string(c.Request().URI().Path())
 
 	route := strings.Split(path, "/")
-	
+
 	if strings.Contains(path, "user") {
-		// if len(route) > 1 && strings.Contains(path, "admin") {
-		// 	log.Println("i'm admin")
-		// 	// log.Println(CheckPerms(c, domain.Permissions["admin"]))
-		// 	return CheckAdminPerms(c, domain.Permissions["admin"])
-		// }
+		if len(route) > 1 && strings.Contains(path, "admin") {
+			return CheckPerms(c, domain.Permissions["admin"])
+		}
 		return c.Next()
 	}
 		

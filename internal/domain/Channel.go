@@ -1,5 +1,7 @@
 package domain
 
+// import "time"
+
 type Channel struct {
 	Id          uint        `gorm:"primarykey;autoIncrement;not null"`
 	OwnerId     uint        `gorm:"not null; foreignKey:id onUpdate:CASCADE; onDelete:CASCADE"`
@@ -27,8 +29,8 @@ type Videos struct {
 	Size          int64  `gorm:"type:integer"`
 	ChannelId     uint   `gorm:"foreignKey:id"`
 	Channel       Channel
-	CreatedAt     string `gorm:"type:time with time zone"`
-	CreationDate  string `gorm:"type:time with time zone"`
+	CreatedAt     string `gorm:"column:created_at"`
+	CreationDate  string `gorm:"column:creation_date"`
 	IsBlock       bool   `gorm:"type:boolean;default:false"`
 	IsHide        bool   `gorm:"type:boolean;default:false"`
 }

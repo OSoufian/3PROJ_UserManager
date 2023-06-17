@@ -45,7 +45,9 @@ func main() {
 
 	// db Initialisaiton
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s", postgresHost, postgresUser, postgresPassword, postgresDatabase, postgresPort)
-	domain.Db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	domain.Db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
+		AllowGlobalUpdate: true,
+	})
 
 	if err != nil {
 		log.Fatal(err)
@@ -65,6 +67,7 @@ func main() {
 		fmt.Println(err)
 	}
 
+	
 	//app run
 	log.Fatal(http.Http().Listen(appListen))
 

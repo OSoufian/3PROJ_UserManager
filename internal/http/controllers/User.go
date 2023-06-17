@@ -14,6 +14,8 @@ func UserBootstrap(app fiber.Router) {
 
 	app.Get("/", about)
 
+	app.Get("/online", getOnlineUsers)
+
 	app.Get("/chat/:UserId", getUserById)
 
 	app.Get("/admin/all", getAllUsers)
@@ -136,12 +138,18 @@ func getUserChannel(c *fiber.Ctx) error {
 // @Failure 404 nil object
 // @Router /user/logout [get]
 func logout(c *fiber.Ctx) error {
+	// user := new(domain.UserModel)
 	userSession := utils.CheckAuthn(c)
 	if userSession == nil {
 		return c.Status(200).JSON(fiber.Map{
 			"message": "logout",
 		})
 	}
+	// log.Println("user session", userSession)
+	// user.Username = userSession.DisplayName
+	// user.Get()
+	// user.Online = false
+	// user.Update()
 	delete(utils.Sessions, userSession.DisplayName)
 	return c.Status(200).JSON(fiber.Map{
 		"message": "logout",
@@ -343,4 +351,14 @@ func deleteCred(c *fiber.Ctx) error {
 	user.Update()
 
 	return c.Status(200).JSON(user)
+}
+
+func getOnlineUsers(c *fiber.Ctx) error {
+	keys := make([]*utils.UserSessions, 0, len(utils.Sessions))
+
+	for k := range utils.Sessions {
+		keys = append(keys, utils.Sessions[k])
+	}
+
+	return c.Status(fiber.StatusOK).JSON(keys)
 }
