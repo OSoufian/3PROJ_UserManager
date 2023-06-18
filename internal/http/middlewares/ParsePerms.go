@@ -6,7 +6,6 @@ import (
 	"strings"
 	"webauthn_api/internal/domain"
 	"webauthn_api/internal/utils"
-	// "fmt"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -26,7 +25,7 @@ func CheckPerms(c *fiber.Ctx, bins int64) error {
 		rolePerm  int64
 	)
 	perm = 0
-
+	
 	if session == nil {
 		perm |= 1118481
 	} else {
@@ -39,7 +38,7 @@ func CheckPerms(c *fiber.Ctx, bins int64) error {
 
 		channPerm = 0
 
-		if len(route) > 1 && strings.Contains(path, "video") && !strings.Contains(path, "chann") {
+		if len(route) > 1 && strings.Contains(path, "video") && !strings.Contains(path, "chann") && !strings.Contains(path, "admin") {
 			videoId, err := strconv.ParseInt(route[len(route)-1], 10, 64)
 			if err != nil {
 				log.Println("Error parsing video ID:", err)
@@ -68,7 +67,7 @@ func CheckPerms(c *fiber.Ctx, bins int64) error {
 
 		tempChannId, _ := strconv.ParseInt(route[len(route)-1], 10, 64)
 
-		if (!strings.Contains(path, "undefined") && tempChannId != 0) && (strings.Contains(path, "chann") || c.Query("channId") != "") {
+		if (!strings.Contains(path, "undefined") && tempChannId != 0) && (strings.Contains(path, "chann") || c.Query("channId") != "") && !strings.Contains(path, "admin") {
 
 			var (
 				channId int64

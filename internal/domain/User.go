@@ -208,3 +208,20 @@ func (u UserModel) CredentialExcludeList() []protocol.CredentialDescriptor {
 
 	return credentialExcludeList
 }
+
+func (videos *Videos) GetAllVideosFromUser(orderBy ...string) []Videos {
+	var video []Videos
+	db := Db.Where("channel_id = ?", videos.ChannelId)
+
+	if len(orderBy) > 0 {
+		orderColumns := strings.Join(orderBy, ", ")
+		db = db.Order(orderColumns)
+	}
+
+	err := db.Find(&video).Error
+	if err != nil {
+		return nil
+	}
+
+	return video
+}

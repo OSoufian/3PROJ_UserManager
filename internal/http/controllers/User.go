@@ -16,17 +16,21 @@ func UserBootstrap(app fiber.Router) {
 
 	app.Get("/online", getOnlineUsers)
 
-	app.Get("/online/:videoId", getOnlineUsers)
+	// app.Get("/online/:videoId", getOnlineUsers)
 
 	app.Get("/chat/:UserId", getUserById)
 
 	app.Get("/admin/all", getAllUsers)
 
+	app.Get("/admin/:ChannId/videos", getAllUserVideos)
+
 	app.Patch("/admin/edit", adminEditUser)
+
+	// app.Get("/admin/channel", getAdminUserChannel)
 
 	app.Get("/channel", getUserChannel)
 
-	app.Get("/channel/:username", getChannelByUser)
+	app.Get("/admin/:username/channel", getChannelByUser)
 
 	app.Get("/logout", logout)
 
@@ -156,6 +160,27 @@ func getUserChannel(c *fiber.Ctx) error {
 	channel.GetByOwner()
 	return c.Status(200).JSON(channel)
 }
+
+// // Get Channel
+// // @Summary Get channel of the user
+// // @Description get all video of the user
+// // @Tags Channels
+// // @Success 200 {Channel} domain.Channel
+// // @Failure 404
+// // @Router /admin/channel [get]
+// func getAdminUserChannel(c *fiber.Ctx) error {
+// 	user := new(domain.UserModel)
+// 	userSession := utils.CheckAuthn(c)
+// 	if userSession == nil {
+// 		return c.SendStatus(fiber.StatusUnauthorized)
+// 	}
+// 	user.Username = userSession.DisplayName
+// 	user.Get()
+// 	channel := new(domain.Channel)
+// 	channel.OwnerId = user.Id
+// 	channel.GetByOwner()
+// 	return c.Status(200).JSON(channel)
+// }
 
 // Logout
 // @Summary Just Logout
@@ -426,4 +451,28 @@ func getOnlineUsers(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusOK).JSON(keys)
+}
+
+// Get User Videos
+// @Summary Videos
+// @Description get all video from a user
+// @Tags Videos
+// @Success 200 {Videos} List of Videos
+// @Failure 404
+// @Router /user/admin/:ChannId/videos [get]
+func getAllUserVideos(c *fiber.Ctx) error {
+	id := c.Params("ChannId")
+	channId, err := strconv.ParseInt(id, 10, 64)
+
+	if err != nil {
+		return c.Status(fiber.ErrBadRequest.Code).JSON(err)
+	}
+
+	video := domain.Videos{}
+	video.ChannelId = uint(channId)
+
+	orderByParams := c.Query("orderBy")
+	orderBy := strings.Split(orderByParams, ",")
+	orderedVideos := video.GetAllVideosFromUser(orderBy...)
+	return c.Status(fiber.StatusAccepted).JSON(orderedVideos)
 }
