@@ -32,6 +32,7 @@ type UserModel struct {
 type UserResponse struct {
 	Username string `json:"Username"`
 	Icon     string `json:"Icon"`
+	Disable  bool   `json:"Disable"`
 }
 
 func (user *UserModel) TableName() string {
@@ -107,6 +108,7 @@ func (user *UserModel) GetById() *UserResponse {
 	return &UserResponse{
 		Username: user.Username,
 		Icon:     user.Icon,
+		Disable:  user.Disable,
 	}
 
 }
@@ -116,7 +118,18 @@ func (user *UserModel) Delete() {
 }
 
 func (user *UserModel) Update() *UserModel {
-	tx := Db.Where("id = ?", user.Id).Updates(&user)
+	tx := Db.Model(&UserModel{}).Where("id = ?", user.Id).Updates(map[string]interface{}{
+		"Online":        user.Online,
+		"Username": 	 user.Username,
+		"Icon":     	 user.Icon,
+		"Email":    	 user.Email,
+		"Password": 	 user.Password,
+		"Incredentials": user.Incredentials,
+		"ValideAccount": user.ValideAccount,
+		"Disable": 		 user.Disable,
+		"Subscribtion":  user.Subscribtion,
+		"Roles": 		 user.Roles,
+	})
 	if tx.RowsAffected == 0 {
 		return nil
 	}
@@ -124,9 +137,18 @@ func (user *UserModel) Update() *UserModel {
 	return user
 }
 
-func (video *UserModel) GetAll() ([]UserModel, error) {
+func (user *UserModel) GetAll() ([]UserModel, error) {
 	var results []UserModel
 	err := Db.Find(&results).Error
+	if err != nil {
+		return nil, err
+	}
+	return results, nil
+}
+
+func (user *UserModel) GetAllCondition(condition string) ([]UserModel, error) {
+	var results []UserModel
+	err := Db.Where(condition).Find(&results).Error
 	if err != nil {
 		return nil, err
 	}

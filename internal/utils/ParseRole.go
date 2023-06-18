@@ -5,6 +5,7 @@ import (
 	"webauthn_api/internal/domain"
 
 	"github.com/gofiber/fiber/v2"
+	"log"
 )
 
 type PartialRole struct {
@@ -39,11 +40,15 @@ func GetRolesBody(c *fiber.Ctx) *domain.Role {
 	if err != nil {
 
 	}
+	
+	log.Println("role start", role)
 
 	role.Description = partialRole.Description
 	role.Name = partialRole.Name
 	role.Weight = partialRole.Weight
 	role.Permission = partialRole.Permission
+	
+	log.Println("role values", role)
 
 	channel := domain.Channel{
 		Id: uint(partialRole.ChannelId),
@@ -52,7 +57,10 @@ func GetRolesBody(c *fiber.Ctx) *domain.Role {
 	channel.Get()
 	role.Channel = channel
 	role.ChannelId = int(channel.Id)
+	log.Println("channel", channel)
 
+	log.Println("role values 2", role)
+	
 	userSession := CheckAuthn(c)
 	if userSession == nil {
 		return &role
@@ -61,10 +69,13 @@ func GetRolesBody(c *fiber.Ctx) *domain.Role {
 		Username: userSession.DisplayName,
 	}
 	user.Get()
-
-	if user.Permission&domain.Permissions["administrator"] != domain.Permissions["administrator"] {
+	
+	if user.Permission & domain.Permissions["administrator"] != domain.Permissions["administrator"] {
+		log.Println("check Perm 2", ^domain.Permissions["administrator"])
 		role.Permission &= ^domain.Permissions["administrator"]
 	}
+
+	log.Println("role", &role)
 
 	return &role
 }

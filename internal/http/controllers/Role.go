@@ -7,6 +7,7 @@ import (
 	"webauthn_api/internal/utils"
 
 	"github.com/gofiber/fiber/v2"
+	"log"
 )
 
 func RoleBootstrap(router fiber.Router) {
@@ -131,6 +132,8 @@ func createRole(c *fiber.Ctx) error {
 // @Router /roles/ [patch]
 func patchRole(c *fiber.Ctx) error {
 	role := utils.GetRolesBody(c)
+
+	log.Println("patch start", role)
 
 	if _, err := role.Update(); err != nil {
 		return c.Status(fiber.ErrBadGateway.Code).JSON(fiber.Map{

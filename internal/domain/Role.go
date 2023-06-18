@@ -1,13 +1,16 @@
 package domain
 
-import "errors"
+import (
+	"errors"
+	"log"
+)
 
 type Role struct {
 	Id          uint `gorm:"primarykey;autoIncrement;not null"`
 	ChannelId   int
 	Channel     Channel     `gorm:"foreignKey:channel_id; onUpdate:CASCADE; onDelete:CASCADE"`
 	Users       []UserModel `gorm:"many2many:user_roles; onUpdate:CASCADE; onDelete:CASCADE"`
-	Weight      int         `gorm:"integer;"`
+	Weight      int         `gorm:"integer; default 0"`
 	Permission  int64       `gorm:"type:bigint"`
 	Name        string      `gorm:"type:varchar(255);"`
 	Description string      `gorm:"type:varchar(255);"`
@@ -49,7 +52,7 @@ func (r *Role) Create() (*Role, error) {
 
 	highestWeight, err := GetHighestRoleWeight()
 	if err != nil {
-		return nil, err
+		log.Println("There was an error getting highest weight", err)
 	}
 	r.Weight = highestWeight + 1
 	tx := Db.Create(r)
@@ -91,7 +94,7 @@ func (r *Role) Get() (*Role, error) {
 
 func (r *Role) Update() (*Role, error) {
 	var role *Role
-	err := Db.Where("id = ?", r.Id).First(role).Error
+	err := Db.Where("id = ?", r.Id).First(&role).Error
 
 	if err != nil {
 		return nil, err

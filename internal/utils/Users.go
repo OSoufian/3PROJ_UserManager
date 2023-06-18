@@ -12,6 +12,7 @@ type PartialUser struct {
 	Icon     string `json:"Icon"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
+	Disable  bool   `json:"Disable"`
 }
 
 func (p *PartialUser) Unmarshal(body []byte) error {

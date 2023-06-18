@@ -65,7 +65,7 @@ func registrationStart(c *fiber.Ctx) error {
 	session.DisplayName = user.Username
 	session.SessionData = sessionData
 	
-	session.Expiration = 1800 // delete after
+	session.Expiration = 86400 // delete after
 
 
 	sessions[session.DisplayName] = session
@@ -129,8 +129,8 @@ func registerEnd(c *fiber.Ctx) error {
 
 	user.SaveCredentials()
 
-	// user.Online = true
-	// user.Update()
+	user.Online = true
+	user.Update()
 
 	session.SessionCred = creds
 	session.Expiration = 24 * 3600 * 2

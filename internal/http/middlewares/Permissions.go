@@ -53,6 +53,7 @@ func Permissions(c *fiber.Ctx) error {
 	}
 
 	perm |= domain.Permissions["administrator"]
+	perm |= domain.Permissions["admin"]
 
 	return CheckPerms(c, perm)
 

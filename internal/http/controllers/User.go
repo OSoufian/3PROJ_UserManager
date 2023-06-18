@@ -16,9 +16,13 @@ func UserBootstrap(app fiber.Router) {
 
 	app.Get("/online", getOnlineUsers)
 
+	app.Get("/online/:videoId", getOnlineUsers)
+
 	app.Get("/chat/:UserId", getUserById)
 
 	app.Get("/admin/all", getAllUsers)
+
+	app.Patch("/admin/edit", adminEditUser)
 
 	app.Get("/channel", getUserChannel)
 
@@ -33,6 +37,7 @@ func UserBootstrap(app fiber.Router) {
 	app.Patch("/", editUser)
 
 	app.Delete("/", deleteUser)
+
 	app.Delete("/:userId", deleteUserById)
 
 	app.Delete("/cred", deleteCred)
@@ -102,12 +107,33 @@ func getChannelByUser(c *fiber.Ctx) error {
 // @Router /all [get]
 func getAllUsers(c *fiber.Ctx) error {
 
+	if c.Query("q") != "" {
+		return getUsersByCondition(c)
+	}
+
 	UsersModels := domain.UserModel{}
 	users, err := UsersModels.GetAll()
 	if err != nil {
 		return c.SendStatus(fiber.ErrBadRequest.Code)
 	}
 	return c.Status(200).JSON(users)
+}
+
+// Get Searched userd
+// @Summary users
+// @Description get searched userd
+// @Tags users
+// @Success 200 {UserModel} List Users
+// @Failure 404
+// @Router /all?q="" [get]
+func getUsersByCondition(c *fiber.Ctx) error {
+	searchQuery := c.Query("q") // Get the search query from the query parameter "q"
+	userModels := domain.UserModel{}
+	users, err := userModels.GetAllCondition(searchQuery)
+	if err != nil {
+		return c.SendStatus(fiber.ErrBadRequest.Code)
+	}
+	return c.Status(fiber.StatusOK).JSON(users)
 }
 
 // Get Channel
@@ -138,19 +164,22 @@ func getUserChannel(c *fiber.Ctx) error {
 // @Failure 404 nil object
 // @Router /user/logout [get]
 func logout(c *fiber.Ctx) error {
-	// user := new(domain.UserModel)
+	user := new(domain.UserModel)
 	userSession := utils.CheckAuthn(c)
 	if userSession == nil {
 		return c.Status(200).JSON(fiber.Map{
 			"message": "logout",
 		})
 	}
-	// log.Println("user session", userSession)
-	// user.Username = userSession.DisplayName
-	// user.Get()
-	// user.Online = false
-	// user.Update()
+
+	user.Username = userSession.DisplayName
+	user.Get()
+	user.Online = false
+
 	delete(utils.Sessions, userSession.DisplayName)
+
+	user.Update()
+
 	return c.Status(200).JSON(fiber.Map{
 		"message": "logout",
 	})
@@ -268,11 +297,47 @@ func editUser(c *fiber.Ctx) error {
 	if partial.Icon != "" {
 		user.Icon = partial.Icon
 	}
-
-
 	user.Email = partial.Email
 	user.Password = partial.Password
-	user.Icon = partial.Icon
+	user.Disable = partial.Disable
+
+	user.Update()
+
+	return c.Status(200).JSON(user)
+
+}
+
+// Edit user
+// @Summary  edit user
+// @Tags Users
+// @Description edit user information
+// @Success 200 {array} domain.UserModel
+// @Failure 404 nil object
+// @Router /user [patch]
+func adminEditUser(c *fiber.Ctx) error {
+	session := utils.CheckAuthn(c)
+	
+	adminUser := domain.UserModel{}
+	adminUser.Username = session.DisplayName
+	adminUser.Get()
+	
+	user := domain.UserModel{}
+	partial := new(utils.PartialUser)
+	if err := partial.Unmarshal(c.Body()); err != nil {
+		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
+			"err": err.Error(),
+		})
+	}
+
+	user.Username = partial.Username
+	user.Get()
+
+	if partial.Icon != "" {
+		user.Icon = partial.Icon
+	}
+	user.Email = partial.Email
+	user.Password = partial.Password
+	user.Disable = partial.Disable
 
 	user.Update()
 
